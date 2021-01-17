@@ -70,6 +70,12 @@ namespace TypeInterpretation.Test
 			return Format(ArrayType(NamedType("Foo", qualified ? _unqualifiedAssembly : null), rank));
 		}
 
+		[Test]
+		public void ArrayOfArrays()
+		{
+			Assert.That(Format(ArrayType(ArrayType(NamedType("Foo"), 1), 2)), Is.EqualTo("Foo[][,]"));
+		}
+
 		[TestCase(false, ExpectedResult = "Foo&")]
 		[TestCase(true, ExpectedResult = "Foo&, Bar")]
 		public string ByRef(bool qualified)
