@@ -30,19 +30,17 @@ namespace TypeInterpretation.Test
 		{
 			var assembly = Assembly("A");
 			var type1 = NamedType("B");
-			var type2 = NamedType("TypeName", assembly, type1);
+			var type2 = NamedType("TypeName", assembly);
 
 			Assert.That(type1.Kind, Is.EqualTo(InsTypeKind.Named));
 			Assert.That(type1.Name, Is.EqualTo("B"));
 			Assert.That(type1.Assembly, Is.Null);
 			Assert.That(type1.DeclaringType, Is.Null);
-			Assert.That(type1.TypeArguments, Is.Empty);
 
 			Assert.That(type2.Kind, Is.EqualTo(InsTypeKind.Named));
 			Assert.That(type2.Name, Is.EqualTo("TypeName"));
 			Assert.That(type2.Assembly, Is.SameAs(assembly));
 			Assert.That(type2.DeclaringType, Is.Null);
-			Assert.That(type2.TypeArguments.Single(), Is.SameAs(type1));
 		}
 
 		[Test]
@@ -86,6 +84,18 @@ namespace TypeInterpretation.Test
 			Assert.That(type.Name, Is.EqualTo("TypeName"));
 			Assert.That(type.Assembly, Is.Null);
 			Assert.That(type.DeclaringType, Is.EqualTo(declaringType));
+		}
+
+		[Test]
+		public void GenericTypeFactory()
+		{
+			var type1 = NamedType("A");
+			var type2 = NamedType("B");
+			var generic = Generic(type1, type2);
+
+			Assert.That(generic.Kind, Is.EqualTo(InsTypeKind.Generic));
+			Assert.That(generic.Definition, Is.EqualTo(type1));
+			Assert.That(generic.TypeArguments.Single(), Is.SameAs(type2));
 		}
 	}
 }

@@ -24,21 +24,22 @@ namespace TypeInterpretation.Test
 @"ByRef:
   Pointer:
     ArrayType:
-      NamedType:
-        ""Nested""
+      Generic:
         NamedType:
-          ""TypeName""
-          Assembly:
-<<<<<<<
-            ""Foo""
-=======
-            ""Bar""
->>>>>>>
-            Qualification:
-              ""Culture""
-              ""neutral""
+          ""Nested""
           NamedType:
-            ""TArg""
+            ""TypeName""
+            Assembly:
+<<<<<<<
+              ""Foo""
+=======
+              ""Bar""
+>>>>>>>
+              Qualification:
+                ""Culture""
+                ""neutral""
+        NamedType:
+          ""TArg""
       1
 ";
 
@@ -54,21 +55,22 @@ namespace TypeInterpretation.Test
 @"ByRef:
   Pointer:
     ArrayType:
-      NamedType:
-        ""Nested""
+      Generic:
         NamedType:
-<<<<<<<
-          ""TypeName""
-=======
-          ""AnotherName""
->>>>>>>
-          Assembly:
-            ""Foo""
-            Qualification:
-              ""Culture""
-              ""neutral""
+          ""Nested""
           NamedType:
-            ""TArg""
+<<<<<<<
+            ""TypeName""
+=======
+            ""AnotherName""
+>>>>>>>
+            Assembly:
+              ""Foo""
+              Qualification:
+                ""Culture""
+                ""neutral""
+        NamedType:
+          ""TArg""
       1
 ";
 
@@ -84,21 +86,22 @@ namespace TypeInterpretation.Test
 @"ByRef:
   Pointer:
     ArrayType:
-      NamedType:
-        ""Nested""
+      Generic:
         NamedType:
-          ""TypeName""
-          Assembly:
-            ""Foo""
-            Qualification:
-<<<<<<<
-              ""Culture""
-=======
-              ""AnotherCulture""
->>>>>>>
-              ""neutral""
+          ""Nested""
           NamedType:
-            ""TArg""
+            ""TypeName""
+            Assembly:
+              ""Foo""
+              Qualification:
+<<<<<<<
+                ""Culture""
+=======
+                ""AnotherCulture""
+>>>>>>>
+                ""neutral""
+        NamedType:
+          ""TArg""
       1
 ";
 
@@ -114,20 +117,21 @@ namespace TypeInterpretation.Test
 @"ByRef:
   Pointer:
     ArrayType:
-      NamedType:
-        ""Nested""
+      Generic:
         NamedType:
-          ""TypeName""
-          Assembly:
-            ""Foo""
-            Qualification:
-              ""Culture""
-              ""neutral""
+          ""Nested""
           NamedType:
+            ""TypeName""
+            Assembly:
+              ""Foo""
+              Qualification:
+                ""Culture""
+                ""neutral""
+        NamedType:
 <<<<<<<
-            ""TArg""
+          ""TArg""
 =======
-            ""TArgument""
+          ""TArgument""
 >>>>>>>
       1
 ";
@@ -144,21 +148,22 @@ namespace TypeInterpretation.Test
 @"ByRef:
   Pointer:
     ArrayType:
-      NamedType:
-<<<<<<<
-        ""Nested""
-=======
-        ""AnotherNested""
->>>>>>>
+      Generic:
         NamedType:
-          ""TypeName""
-          Assembly:
-            ""Foo""
-            Qualification:
-              ""Culture""
-              ""neutral""
+<<<<<<<
+          ""Nested""
+=======
+          ""AnotherNested""
+>>>>>>>
           NamedType:
-            ""TArg""
+            ""TypeName""
+            Assembly:
+              ""Foo""
+              Qualification:
+                ""Culture""
+                ""neutral""
+        NamedType:
+          ""TArg""
       1
 ";
 
@@ -171,14 +176,15 @@ namespace TypeInterpretation.Test
 			ByRefType(
 				PointerType(
 					ArrayType(
-						NestedType(
-							NamedType(
-								"TypeName",
-								Assembly(
-									"Foo",
-									Qualification("Culture", "neutral")),
-								NamedType("TArg")),
-							"Nested"),
+						Generic(
+							NestedType(
+								NamedType(
+									"TypeName",
+									Assembly(
+										"Foo",
+										Qualification("Culture", "neutral"))),
+								"Nested"),
+							NamedType("TArg")),
 						1)));
 
 		sealed class DummyRewriter : InsRewriter<Func<string, string>>
@@ -194,21 +200,17 @@ namespace TypeInterpretation.Test
 					return base.VisitNamed(type, mutator);
 				}
 
-				var typeArguments = VisitTypes(type.TypeArguments, mutator);
-
 				if (type.DeclaringType != null)
 				{
 					return NestedType(
 						type.DeclaringType,
-						newName,
-						typeArguments);
+						newName);
 				}
 				else
 				{
 					return NamedType(
 						newName,
-						type.Assembly == null ? null : VisitAssembly(type.Assembly, mutator),
-						typeArguments);
+						type.Assembly == null ? null : VisitAssembly(type.Assembly, mutator));
 				}
 			}
 

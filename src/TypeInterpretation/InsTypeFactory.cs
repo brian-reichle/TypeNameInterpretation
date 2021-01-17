@@ -8,11 +8,8 @@ namespace TypeInterpretation
 		public static InsArrayType ArrayType(InsType elementType, int array)
 			=> new InsArrayType(elementType, array);
 
-		public static InsNamedType NamedType(string name, InsAssembly? assembly = null, params InsType[] typeArguments)
-			=> NamedType(name, assembly, ImmutableArray.Create(typeArguments));
-
-		public static InsNamedType NamedType(string name, InsAssembly? assembly, ImmutableArray<InsType> typeArguments)
-			=> new InsNamedType(name, assembly, typeArguments);
+		public static InsNamedType NamedType(string name, InsAssembly? assembly = null)
+			=> new InsNamedType(name, assembly);
 
 		public static InsPointerType PointerType(InsType elementType)
 			=> new InsPointerType(elementType);
@@ -20,11 +17,14 @@ namespace TypeInterpretation
 		public static InsByRefType ByRefType(InsType elementType)
 			=> new InsByRefType(elementType);
 
-		public static InsNamedType NestedType(InsNamedType declaringType, string name, params InsType[] typeArguments)
-			=> NestedType(declaringType, name, ImmutableArray.Create(typeArguments));
+		public static InsNamedType NestedType(InsNamedType declaringType, string name)
+			=> new InsNamedType(name, declaringType);
 
-		public static InsNamedType NestedType(InsNamedType declaringType, string name, ImmutableArray<InsType> typeArguments)
-			=> new InsNamedType(name, declaringType, typeArguments);
+		public static InsGenericType Generic(InsNamedType definition, params InsType[] typeArguments)
+			=> Generic(definition, ImmutableArray.Create(typeArguments));
+
+		public static InsGenericType Generic(InsNamedType definition, ImmutableArray<InsType> typeArguments)
+			=> new InsGenericType(definition, typeArguments);
 
 		public static InsAssembly Assembly(string name, params InsAssemblyQualification[] qualifications)
 			=> new InsAssembly(name, ImmutableArray.Create(qualifications));

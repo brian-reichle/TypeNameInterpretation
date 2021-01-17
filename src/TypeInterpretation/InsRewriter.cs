@@ -29,35 +29,27 @@ namespace TypeInterpretation
 				throw new ArgumentNullException(nameof(type));
 			}
 
-			var typeArguments = VisitTypes(type.TypeArguments, argument);
-
 			if (type.DeclaringType != null)
 			{
 				var declaringType = (InsNamedType)type.DeclaringType.Apply(this, argument);
 
-				if (declaringType == type.DeclaringType && typeArguments == type.TypeArguments)
+				if (declaringType == type.DeclaringType)
 				{
 					return type;
 				}
 
-				return new InsNamedType(
-					type.Name,
-					declaringType,
-					typeArguments);
+				return new InsNamedType(type.Name, declaringType);
 			}
 			else
 			{
 				var assembly = type.Assembly == null ? null : VisitAssembly(type.Assembly, argument);
 
-				if (assembly == type.Assembly && typeArguments == type.TypeArguments)
+				if (assembly == type.Assembly)
 				{
 					return type;
 				}
 
-				return new InsNamedType(
-					type.Name,
-					assembly,
-					typeArguments);
+				return new InsNamedType(type.Name, assembly);
 			}
 		}
 
@@ -93,6 +85,24 @@ namespace TypeInterpretation
 			}
 
 			return new InsByRefType(inner);
+		}
+
+		public virtual InsType VisitGeneric(InsGenericType type, TArgument argument)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			var definition = (InsNamedType)type.Definition.Apply(this, argument);
+			var typeArguments = VisitTypes(type.TypeArguments, argument);
+
+			if (definition == type.Definition && typeArguments == type.TypeArguments)
+			{
+				return type;
+			}
+
+			return new InsGenericType(definition, typeArguments);
 		}
 
 		public virtual ImmutableArray<InsType> VisitTypes(ImmutableArray<InsType> typeArguments, TArgument argument)

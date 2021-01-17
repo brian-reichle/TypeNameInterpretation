@@ -55,6 +55,10 @@ namespace TypeInterpretation.Test
 					case InsTypeKind.Pointer:
 						DiffPointerType(indent, (InsPointerType)type1, (InsPointerType)type2);
 						break;
+
+					case InsTypeKind.Generic:
+						DiffGenericType(indent, (InsGenericType)type1, (InsGenericType)type2);
+						break;
 				}
 			}
 
@@ -71,6 +75,15 @@ namespace TypeInterpretation.Test
 						DiffType(indent, types1[i], types2[i]);
 					}
 				}
+			}
+
+			void DiffGenericType(int indent, InsGenericType type1, InsGenericType type2)
+			{
+				FormatLabel(indent, "Generic");
+
+				indent++;
+				DiffType(indent, type1.Definition, type2.Definition);
+				DiffTypes(indent, type1.TypeArguments, type2.TypeArguments);
 			}
 
 			void DiffPointerType(int indent, InsPointerType type1, InsPointerType type2)
@@ -106,7 +119,6 @@ namespace TypeInterpretation.Test
 				DiffLiteral(indent, type1.Name, type2.Name);
 				DiffType(indent, type1.DeclaringType, type2.DeclaringType);
 				DiffAssembly(indent, type1.Assembly, type2.Assembly);
-				DiffTypes(indent, type1.TypeArguments, type2.TypeArguments);
 			}
 
 			void DiffAssembly(int indent, InsAssembly? assembly1, InsAssembly? assembly2)
@@ -229,9 +241,22 @@ namespace TypeInterpretation.Test
 						FormatPointer(indent, (InsPointerType)type);
 						break;
 
+					case InsTypeKind.Generic:
+						FormatGeneric(indent, (InsGenericType)type);
+						break;
+
 					default:
 						throw new ArgumentException("Unknown type kind: " + type.Kind, nameof(type));
 				}
+			}
+
+			void FormatGeneric(int indent, InsGenericType type)
+			{
+				FormatLabel(indent, "Generic");
+
+				indent++;
+				FormatType(indent, type.Definition);
+				FormatTypes(indent, type.TypeArguments);
 			}
 
 			void FormatPointer(int indent, InsPointerType type)
@@ -267,7 +292,6 @@ namespace TypeInterpretation.Test
 				FormatLiteral(indent, type.Name);
 				FormatType(indent, type.DeclaringType);
 				FormatAssembly(indent, type.Assembly);
-				FormatTypes(indent, type.TypeArguments);
 			}
 
 			void FormatAssembly(int indent, InsAssembly? assembly)

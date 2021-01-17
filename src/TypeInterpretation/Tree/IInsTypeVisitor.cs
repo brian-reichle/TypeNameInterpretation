@@ -6,5 +6,6 @@ namespace TypeInterpretation
 		TReturn VisitNamed(InsNamedType type, TArgument argument);
 		TReturn VisitPointer(InsPointerType type, TArgument argument);
 		TReturn VisitByRef(InsByRefType type, TArgument argument);
+		TReturn VisitGeneric(InsGenericType type, TArgument argument);
 	}
 }

@@ -41,9 +41,10 @@ namespace TypeInterpretation.Test
 		[TestCase(false, false, ExpectedResult = "Foo`2[[Baz],[Quux]]")]
 		public string GenericNamedType(bool qualifiedOuter, bool qualifiedInner)
 		{
-			var type = NamedType(
-				"Foo`2",
-				qualifiedOuter ? _unqualifiedAssembly : null,
+			var type = Generic(
+				NamedType(
+					"Foo`2",
+					qualifiedOuter ? _unqualifiedAssembly : null),
 				NamedType(
 					"Baz",
 					qualifiedInner ? _unqualifiedAssembly : null),

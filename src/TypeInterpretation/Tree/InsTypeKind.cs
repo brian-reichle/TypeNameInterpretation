@@ -6,5 +6,6 @@ namespace TypeInterpretation
 		ByRef,
 		Array,
 		Named,
+		Generic,
 	}
 }
