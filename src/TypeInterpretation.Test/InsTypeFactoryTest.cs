@@ -35,11 +35,13 @@ namespace TypeInterpretation.Test
 			Assert.That(type1.Kind, Is.EqualTo(InsTypeKind.Named));
 			Assert.That(type1.Name, Is.EqualTo("B"));
 			Assert.That(type1.Assembly, Is.Null);
+			Assert.That(type1.DeclaringType, Is.Null);
 			Assert.That(type1.TypeArguments, Is.Empty);
 
 			Assert.That(type2.Kind, Is.EqualTo(InsTypeKind.Named));
 			Assert.That(type2.Name, Is.EqualTo("TypeName"));
 			Assert.That(type2.Assembly, Is.SameAs(assembly));
+			Assert.That(type2.DeclaringType, Is.Null);
 			Assert.That(type2.TypeArguments.Single(), Is.SameAs(type1));
 		}
 
@@ -72,6 +74,18 @@ namespace TypeInterpretation.Test
 
 			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.ByRef));
 			Assert.That(type.ElementType, Is.SameAs(elementType));
+		}
+
+		[Test]
+		public void NestedFactory()
+		{
+			var declaringType = NamedType("B");
+			var type = NestedType(declaringType, "TypeName");
+
+			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Named));
+			Assert.That(type.Name, Is.EqualTo("TypeName"));
+			Assert.That(type.Assembly, Is.Null);
+			Assert.That(type.DeclaringType, Is.EqualTo(declaringType));
 		}
 	}
 }
