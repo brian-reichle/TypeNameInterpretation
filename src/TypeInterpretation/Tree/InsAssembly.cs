@@ -13,5 +13,6 @@ namespace TypeInterpretation
 
 		public string Name { get; }
 		public ImmutableArray<InsAssemblyQualification> Qualifications { get; }
+		public override string ToString() => InsFormatter.Format(this);
 	}
 }
