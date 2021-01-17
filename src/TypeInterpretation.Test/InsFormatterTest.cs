@@ -44,6 +44,13 @@ namespace TypeInterpretation.Test
 			return Format(type);
 		}
 
+		[TestCase(true, ExpectedResult = "Foo+Baz, Bar")]
+		[TestCase(false, ExpectedResult = "Foo+Baz")]
+		public string Nested(bool qualified)
+		{
+			return Format(NestedType(NamedType("Foo", qualified ? _unqualifiedAssembly : null), "Baz"));
+		}
+
 		[TestCase(1, false, ExpectedResult = "Foo[]")]
 		[TestCase(2, false, ExpectedResult = "Foo[,]")]
 		[TestCase(1, true, ExpectedResult = "Foo[], Bar")]

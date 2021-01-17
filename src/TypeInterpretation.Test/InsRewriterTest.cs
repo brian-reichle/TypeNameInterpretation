@@ -25,18 +25,20 @@ namespace TypeInterpretation.Test
   Pointer:
     ArrayType:
       NamedType:
-        ""TypeName""
-        Assembly:
-<<<<<<<
-          ""Foo""
-=======
-          ""Bar""
->>>>>>>
-          Qualification:
-            ""Culture""
-            ""neutral""
+        ""Nested""
         NamedType:
-          ""TArg""
+          ""TypeName""
+          Assembly:
+<<<<<<<
+            ""Foo""
+=======
+            ""Bar""
+>>>>>>>
+            Qualification:
+              ""Culture""
+              ""neutral""
+          NamedType:
+            ""TArg""
       1
 ";
 
@@ -53,18 +55,20 @@ namespace TypeInterpretation.Test
   Pointer:
     ArrayType:
       NamedType:
-<<<<<<<
-        ""TypeName""
-=======
-        ""AnotherName""
->>>>>>>
-        Assembly:
-          ""Foo""
-          Qualification:
-            ""Culture""
-            ""neutral""
+        ""Nested""
         NamedType:
-          ""TArg""
+<<<<<<<
+          ""TypeName""
+=======
+          ""AnotherName""
+>>>>>>>
+          Assembly:
+            ""Foo""
+            Qualification:
+              ""Culture""
+              ""neutral""
+          NamedType:
+            ""TArg""
       1
 ";
 
@@ -81,18 +85,20 @@ namespace TypeInterpretation.Test
   Pointer:
     ArrayType:
       NamedType:
-        ""TypeName""
-        Assembly:
-          ""Foo""
-          Qualification:
-<<<<<<<
-            ""Culture""
-=======
-            ""AnotherCulture""
->>>>>>>
-            ""neutral""
+        ""Nested""
         NamedType:
-          ""TArg""
+          ""TypeName""
+          Assembly:
+            ""Foo""
+            Qualification:
+<<<<<<<
+              ""Culture""
+=======
+              ""AnotherCulture""
+>>>>>>>
+              ""neutral""
+          NamedType:
+            ""TArg""
       1
 ";
 
@@ -109,18 +115,50 @@ namespace TypeInterpretation.Test
   Pointer:
     ArrayType:
       NamedType:
-        ""TypeName""
-        Assembly:
-          ""Foo""
-          Qualification:
-            ""Culture""
-            ""neutral""
+        ""Nested""
         NamedType:
+          ""TypeName""
+          Assembly:
+            ""Foo""
+            Qualification:
+              ""Culture""
+              ""neutral""
+          NamedType:
 <<<<<<<
-          ""TArg""
+            ""TArg""
 =======
-          ""TArgument""
+            ""TArgument""
 >>>>>>>
+      1
+";
+
+			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+		}
+
+		[Test]
+		public void RewriteNested()
+		{
+			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Nested", "AnotherNested"));
+
+			const string ExpectedDiffs =
+@"ByRef:
+  Pointer:
+    ArrayType:
+      NamedType:
+<<<<<<<
+        ""Nested""
+=======
+        ""AnotherNested""
+>>>>>>>
+        NamedType:
+          ""TypeName""
+          Assembly:
+            ""Foo""
+            Qualification:
+              ""Culture""
+              ""neutral""
+          NamedType:
+            ""TArg""
       1
 ";
 
@@ -133,12 +171,14 @@ namespace TypeInterpretation.Test
 			ByRefType(
 				PointerType(
 					ArrayType(
-						NamedType(
-							"TypeName",
-							Assembly(
-								"Foo",
-								Qualification("Culture", "neutral")),
-							NamedType("TArg")),
+						NestedType(
+							NamedType(
+								"TypeName",
+								Assembly(
+									"Foo",
+									Qualification("Culture", "neutral")),
+								NamedType("TArg")),
+							"Nested"),
 						1)));
 
 		sealed class DummyRewriter : InsRewriter<Func<string, string>>
@@ -149,15 +189,27 @@ namespace TypeInterpretation.Test
 			{
 				var newName = mutator(type.Name);
 
-				if (newName != type.Name)
+				if (newName == type.Name)
+				{
+					return base.VisitNamed(type, mutator);
+				}
+
+				var typeArguments = VisitTypes(type.TypeArguments, mutator);
+
+				if (type.DeclaringType != null)
+				{
+					return NestedType(
+						type.DeclaringType,
+						newName,
+						typeArguments);
+				}
+				else
 				{
 					return NamedType(
 						newName,
 						type.Assembly == null ? null : VisitAssembly(type.Assembly, mutator),
-						VisitTypes(type.TypeArguments, mutator));
+						typeArguments);
 				}
-
-				return base.VisitNamed(type, mutator);
 			}
 
 			public override InsAssembly VisitAssembly(InsAssembly assembly, Func<string, string> mutator)

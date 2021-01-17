@@ -30,17 +30,35 @@ namespace TypeInterpretation
 			}
 
 			var typeArguments = VisitTypes(type.TypeArguments, argument);
-			var assembly = type.Assembly == null ? null : VisitAssembly(type.Assembly, argument);
 
-			if (typeArguments == type.TypeArguments && assembly == type.Assembly)
+			if (type.DeclaringType != null)
 			{
-				return type;
-			}
+				var declaringType = (InsNamedType)type.DeclaringType.Apply(this, argument);
 
-			return new InsNamedType(
-				type.Name,
-				assembly,
-				typeArguments);
+				if (declaringType == type.DeclaringType && typeArguments == type.TypeArguments)
+				{
+					return type;
+				}
+
+				return new InsNamedType(
+					type.Name,
+					declaringType,
+					typeArguments);
+			}
+			else
+			{
+				var assembly = type.Assembly == null ? null : VisitAssembly(type.Assembly, argument);
+
+				if (assembly == type.Assembly && typeArguments == type.TypeArguments)
+				{
+					return type;
+				}
+
+				return new InsNamedType(
+					type.Name,
+					assembly,
+					typeArguments);
+			}
 		}
 
 		public virtual InsType VisitPointer(InsPointerType type, TArgument argument)

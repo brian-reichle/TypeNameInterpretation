@@ -19,6 +19,12 @@ namespace TypeInterpretation
 		public static InsByRefType ByRefType(InsType elementType)
 			=> new InsByRefType(elementType);
 
+		public static InsNamedType NestedType(InsNamedType declaringType, string name, params InsType[] typeArguments)
+			=> NestedType(declaringType, name, ImmutableArray.Create(typeArguments));
+
+		public static InsNamedType NestedType(InsNamedType declaringType, string name, ImmutableArray<InsType> typeArguments)
+			=> new InsNamedType(name, declaringType, typeArguments);
+
 		public static InsAssembly Assembly(string name, params InsAssemblyQualification[] qualifications)
 			=> new InsAssembly(name, ImmutableArray.Create(qualifications));
 

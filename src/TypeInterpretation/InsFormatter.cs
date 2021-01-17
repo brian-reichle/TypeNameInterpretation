@@ -66,6 +66,12 @@ namespace TypeInterpretation
 
 			public StringBuilder VisitNamed(InsNamedType type, StringBuilder builder)
 			{
+				if (type.DeclaringType != null)
+				{
+					type.DeclaringType.Apply(this, builder);
+					builder.Append('+');
+				}
+
 				builder.Append(type.Name);
 
 				var typeArguments = type.TypeArguments;
@@ -119,9 +125,18 @@ namespace TypeInterpretation
 			}
 
 			public InsAssembly? VisitArray(InsArrayType type, object argument) => type.ElementType.Apply(this, argument);
-			public InsAssembly? VisitNamed(InsNamedType type, object argument) => type.Assembly;
 			public InsAssembly? VisitPointer(InsPointerType type, object argument) => type.ElementType.Apply(this, argument);
 			public InsAssembly? VisitByRef(InsByRefType type, object argument) => type.ElementType.Apply(this, argument);
+
+			public InsAssembly? VisitNamed(InsNamedType type, object argument)
+			{
+				while (type.DeclaringType != null)
+				{
+					type = type.DeclaringType;
+				}
+
+				return type.Assembly;
+			}
 		}
 	}
 }

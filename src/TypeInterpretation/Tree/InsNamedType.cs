@@ -15,7 +15,18 @@ namespace TypeInterpretation
 			TypeArguments = typeArguments;
 		}
 
+		internal InsNamedType(
+			string name,
+			InsNamedType? declaringType,
+			ImmutableArray<InsType> typeArguments)
+		{
+			Name = name ?? throw new ArgumentNullException(nameof(name));
+			DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+			TypeArguments = typeArguments;
+		}
+
 		public string Name { get; }
+		public InsNamedType? DeclaringType { get; }
 		public InsAssembly? Assembly { get; }
 		public ImmutableArray<InsType> TypeArguments { get; }
 		public override InsTypeKind Kind => InsTypeKind.Named;

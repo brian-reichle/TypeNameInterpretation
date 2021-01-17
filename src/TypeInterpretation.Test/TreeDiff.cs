@@ -20,7 +20,7 @@ namespace TypeInterpretation.Test
 				_builder = builder;
 			}
 
-			public void DiffType(int indent, InsType type1, InsType type2)
+			public void DiffType(int indent, InsType? type1, InsType? type2)
 			{
 				if (type1 == type2)
 				{
@@ -28,13 +28,14 @@ namespace TypeInterpretation.Test
 					return;
 				}
 
-				if (type1.Kind != type2.Kind)
+				if (type1 == null || type2 == null || type1.Kind != type2.Kind)
 				{
 					StartLeft();
 					FormatType(indent, type1);
 					StartRight();
 					FormatType(indent, type2);
 					StartMatch();
+					return;
 				}
 
 				switch (type1.Kind)
@@ -103,6 +104,7 @@ namespace TypeInterpretation.Test
 
 				indent++;
 				DiffLiteral(indent, type1.Name, type2.Name);
+				DiffType(indent, type1.DeclaringType, type2.DeclaringType);
 				DiffAssembly(indent, type1.Assembly, type2.Assembly);
 				DiffTypes(indent, type1.TypeArguments, type2.TypeArguments);
 			}
@@ -202,8 +204,13 @@ namespace TypeInterpretation.Test
 				}
 			}
 
-			void FormatType(int indent, InsType type)
+			void FormatType(int indent, InsType? type)
 			{
+				if (type == null)
+				{
+					return;
+				}
+
 				switch (type.Kind)
 				{
 					case InsTypeKind.Named:
@@ -258,6 +265,7 @@ namespace TypeInterpretation.Test
 
 				indent++;
 				FormatLiteral(indent, type.Name);
+				FormatType(indent, type.DeclaringType);
 				FormatAssembly(indent, type.Assembly);
 				FormatTypes(indent, type.TypeArguments);
 			}
