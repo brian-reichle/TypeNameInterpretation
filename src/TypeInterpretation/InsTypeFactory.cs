@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 
 namespace TypeInterpretation
@@ -33,5 +34,8 @@ namespace TypeInterpretation
 
 		public static InsAssemblyQualification Qualification(string name, string value)
 			=> new InsAssemblyQualification(name, value);
+
+		public static InsAssembly ParseAssemblyName(string value) => InsParser.ParseAssembly(value.AsSpan());
+		public static InsAssembly ParseAssemblyName(ReadOnlySpan<char> value) => InsParser.ParseAssembly(value);
 	}
 }
