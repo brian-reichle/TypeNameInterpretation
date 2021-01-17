@@ -7,16 +7,26 @@ namespace TypeInterpretation.Test
 	[TestFixture]
 	class InsFormatterTest
 	{
-		[Test]
-		public void SimpleNamedType()
+		[TestCase("Foo", ExpectedResult = "Foo")]
+		[TestCase("[Foo]", ExpectedResult = "\\[Foo\\]")]
+		[TestCase("Foo&", ExpectedResult = "Foo\\&")]
+		[TestCase("Foo*", ExpectedResult = "Foo\\*")]
+		[TestCase("Foo+", ExpectedResult = "Foo\\+")]
+		[TestCase("Foo\\Baz", ExpectedResult = "Foo\\\\Baz")]
+		public string SimpleNamedType(string identifierName)
 		{
-			Assert.That(Format(NamedType("Foo")), Is.EqualTo("Foo"));
+			return Format(NamedType(identifierName));
 		}
 
-		[Test]
-		public void AssemblyQualifiedNamedType()
+		[TestCase("Bar", ExpectedResult = "Foo, Bar")]
+		[TestCase("[Bar]", ExpectedResult = "Foo, \\[Bar\\]")]
+		[TestCase("Bar&", ExpectedResult = "Foo, Bar\\&")]
+		[TestCase("Bar*", ExpectedResult = "Foo, Bar\\*")]
+		[TestCase("Bar+", ExpectedResult = "Foo, Bar\\+")]
+		[TestCase("Bar\\Baz", ExpectedResult = "Foo, Bar\\\\Baz")]
+		public string AssemblyQualifiedNamedType(string identifier)
 		{
-			Assert.That(Format(NamedType("Foo", _unqualifiedAssembly)), Is.EqualTo("Foo, Bar"));
+			return Format(NamedType("Foo", Assembly(identifier)));
 		}
 
 		[Test]

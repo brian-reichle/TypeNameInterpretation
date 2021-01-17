@@ -72,7 +72,7 @@ namespace TypeInterpretation
 					builder.Append('+');
 				}
 
-				builder.Append(type.Name);
+				WriteIdentifier(type.Name, builder);
 
 				var typeArguments = type.TypeArguments;
 
@@ -101,7 +101,7 @@ namespace TypeInterpretation
 
 			public static StringBuilder WriteAssembly(InsAssembly assembly, StringBuilder builder)
 			{
-				builder.Append(assembly.Name);
+				WriteIdentifier(assembly.Name, builder);
 
 				foreach (var qualification in assembly.Qualifications)
 				{
@@ -113,6 +113,37 @@ namespace TypeInterpretation
 				}
 
 				return builder;
+			}
+
+			static void WriteIdentifier(string identifier, StringBuilder builder)
+			{
+				var start = 0;
+
+				for (var i = 0; i < identifier.Length; i++)
+				{
+					switch (identifier[i])
+					{
+						case ',':
+						case '[':
+						case ']':
+						case '&':
+						case '*':
+						case '+':
+						case '\\':
+							break;
+
+						default:
+							continue;
+					}
+
+					builder
+						.Append(identifier, start, i - start)
+						.Append('\\');
+
+					start = i;
+				}
+
+				builder.Append(identifier, start, identifier.Length - start);
 			}
 		}
 
