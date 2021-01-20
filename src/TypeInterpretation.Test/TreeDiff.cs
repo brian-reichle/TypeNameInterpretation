@@ -13,6 +13,13 @@ namespace TypeInterpretation.Test
 			return builder.ToString();
 		}
 
+		public static string Format(InsType type)
+		{
+			var builder = new StringBuilder();
+			new Context(builder).FormatType(0, type);
+			return builder.ToString();
+		}
+
 		struct Context
 		{
 			public Context(StringBuilder builder)
@@ -216,7 +223,7 @@ namespace TypeInterpretation.Test
 				}
 			}
 
-			void FormatType(int indent, InsType? type)
+			public void FormatType(int indent, InsType? type)
 			{
 				if (type == null)
 				{

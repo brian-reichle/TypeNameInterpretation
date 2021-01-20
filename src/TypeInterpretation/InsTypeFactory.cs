@@ -37,5 +37,8 @@ namespace TypeInterpretation
 
 		public static InsAssembly ParseAssemblyName(string value) => InsParser.ParseAssembly(value.AsSpan());
 		public static InsAssembly ParseAssemblyName(ReadOnlySpan<char> value) => InsParser.ParseAssembly(value);
+
+		public static InsType ParseTypeName(string value) => InsParser.ParseType(value.AsSpan());
+		public static InsType ParseTypeName(ReadOnlySpan<char> value) => InsParser.ParseType(value);
 	}
 }

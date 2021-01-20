@@ -32,5 +32,291 @@ namespace TypeInterpretation.Test
 			Assert.That(assembly.Name, Is.EqualTo("Foo"));
 			Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications));
 		}
+
+		[Test]
+		public void Type_Unqualified()
+		{
+			var expected =
+@"NamedType:
+  ""Foo.Bar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Qualified()
+		{
+			var expected =
+@"NamedType:
+  ""Foo.Bar.Baz""
+  Assembly:
+    ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_FullyQualified()
+		{
+			var expected =
+@"NamedType:
+  ""Foo.Bar.Baz""
+  Assembly:
+    ""FooBar""
+    Qualification:
+      ""Culture""
+      ""neutral""
+    Qualification:
+      ""Version""
+      ""3.14""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar, Culture=neutral, Version=3.14")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Nested()
+		{
+			var expected =
+@"NamedType:
+  ""Baz""
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar+Baz, FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_GenericWithUnquolifiedArg1()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Foo.Bar`1""
+    Assembly:
+      ""FooBar""
+  NamedType:
+    ""Baz""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_GenericWithUnquolifiedArg2()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Foo.Bar`2""
+    Assembly:
+      ""FooBar""
+  NamedType:
+    ""Baz""
+  NamedType:
+    ""Quux""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`2[Baz,Quux], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_GenericWithUnquolifiedArg3()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Foo.Bar`3""
+    Assembly:
+      ""FooBar""
+  NamedType:
+    ""Baz""
+  NamedType:
+    ""Quux""
+  NamedType:
+    ""Barry""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`3[Baz,Quux,Barry], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_GenericWithQuolifiedArg()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Foo.Bar`1""
+    Assembly:
+      ""FooBar""
+  NamedType:
+    ""Baz""
+    Assembly:
+      ""FooBaz""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[[Baz, FooBaz]], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_GenericOfArray()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Foo.Bar`1""
+    Assembly:
+      ""FooBar""
+  ArrayType:
+    NamedType:
+      ""Baz""
+    1
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_ArrayOfGeneric()
+		{
+			var expected =
+@"ArrayType:
+  Generic:
+    NamedType:
+      ""Foo.Bar`1""
+      Assembly:
+        ""FooBar""
+    NamedType:
+      ""Baz""
+  1
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Array1()
+		{
+			var expected =
+@"ArrayType:
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+  1
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Array2()
+		{
+			var expected =
+@"ArrayType:
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+  2
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Array2_1()
+		{
+			var expected =
+@"ArrayType:
+  ArrayType:
+    NamedType:
+      ""Foo.Bar""
+      Assembly:
+        ""FooBar""
+    2
+  1
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_Pointer()
+		{
+			var expected =
+@"Pointer:
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar*, FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_PointerPointer()
+		{
+			var expected =
+@"Pointer:
+  Pointer:
+    NamedType:
+      ""Foo.Bar""
+      Assembly:
+        ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar**, FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_ByRef()
+		{
+			var expected =
+@"ByRef:
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar&, FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_ComplexAssemblyLocation()
+		{
+			var expected =
+@"Generic:
+  NamedType:
+    ""Baz""
+    Assembly:
+      ""Quux""
+  ArrayType:
+    NamedType:
+      ""Foo.Bar""
+      Assembly:
+        ""FooBar""
+        Qualification:
+          ""Culture""
+          ""neu""tr]al""
+        Qualification:
+          ""Frob""
+          ""bar]x""
+        Qualification:
+          ""Version""
+          ""3.14""
+    2
+";
+
+			// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
+		}
 	}
 }
