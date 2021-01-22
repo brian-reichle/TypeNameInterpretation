@@ -97,5 +97,15 @@ namespace TypeInterpretation.Test
 			Assert.That(generic.Definition, Is.EqualTo(type1));
 			Assert.That(generic.TypeArguments.Single(), Is.SameAs(type2));
 		}
+
+		[Test]
+		public void SZArrayTypeFactory()
+		{
+			var elementType = NamedType("A");
+			var type = SZArrayType(elementType);
+
+			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.SZArray));
+			Assert.That(type.ElementType, Is.SameAs(elementType));
+		}
 	}
 }

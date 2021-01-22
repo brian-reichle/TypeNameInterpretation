@@ -62,19 +62,26 @@ namespace TypeInterpretation.Test
 			return Format(NestedType(NamedType("Foo", qualified ? _unqualifiedAssembly : null), "Baz"));
 		}
 
-		[TestCase(1, false, ExpectedResult = "Foo[]")]
+		[TestCase(1, false, ExpectedResult = "Foo[*]")]
 		[TestCase(2, false, ExpectedResult = "Foo[,]")]
-		[TestCase(1, true, ExpectedResult = "Foo[], Bar")]
+		[TestCase(1, true, ExpectedResult = "Foo[*], Bar")]
 		[TestCase(2, true, ExpectedResult = "Foo[,], Bar")]
 		public string Array(int rank, bool qualified)
 		{
 			return Format(ArrayType(NamedType("Foo", qualified ? _unqualifiedAssembly : null), rank));
 		}
 
+		[TestCase(false, ExpectedResult = "Foo[]")]
+		[TestCase(true, ExpectedResult = "Foo[], Bar")]
+		public string SZArray(bool qualified)
+		{
+			return Format(SZArrayType(NamedType("Foo", qualified ? _unqualifiedAssembly : null)));
+		}
+
 		[Test]
 		public void ArrayOfArrays()
 		{
-			Assert.That(Format(ArrayType(ArrayType(NamedType("Foo"), 1), 2)), Is.EqualTo("Foo[][,]"));
+			Assert.That(Format(ArrayType(ArrayType(NamedType("Foo"), 1), 2)), Is.EqualTo("Foo[*][,]"));
 		}
 
 		[TestCase(false, ExpectedResult = "Foo&")]

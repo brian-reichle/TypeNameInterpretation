@@ -172,10 +172,9 @@ namespace TypeInterpretation.Test
     ""Foo.Bar`1""
     Assembly:
       ""FooBar""
-  ArrayType:
+  SZArrayType:
     NamedType:
       ""Baz""
-    1
 ";
 
 			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
@@ -185,7 +184,7 @@ namespace TypeInterpretation.Test
 		public void Type_ArrayOfGeneric()
 		{
 			var expected =
-@"ArrayType:
+@"SZArrayType:
   Generic:
     NamedType:
       ""Foo.Bar`1""
@@ -193,10 +192,23 @@ namespace TypeInterpretation.Test
         ""FooBar""
     NamedType:
       ""Baz""
-  1
 ";
 
 			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void Type_SZArray()
+		{
+			var expected =
+@"SZArrayType:
+  NamedType:
+    ""Foo.Bar""
+    Assembly:
+      ""FooBar""
+";
+
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -211,7 +223,7 @@ namespace TypeInterpretation.Test
   1
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[*], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -243,7 +255,7 @@ namespace TypeInterpretation.Test
   1
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][*], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]

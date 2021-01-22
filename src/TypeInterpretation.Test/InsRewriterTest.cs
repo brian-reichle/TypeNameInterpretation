@@ -23,24 +23,25 @@ namespace TypeInterpretation.Test
 			const string ExpectedDiffs =
 @"ByRef:
   Pointer:
-    ArrayType:
-      Generic:
-        NamedType:
-          ""Nested""
+    SZArrayType:
+      ArrayType:
+        Generic:
           NamedType:
-            ""TypeName""
-            Assembly:
+            ""Nested""
+            NamedType:
+              ""TypeName""
+              Assembly:
 <<<<<<<
-              ""Foo""
+                ""Foo""
 =======
-              ""Bar""
+                ""Bar""
 >>>>>>>
-              Qualification:
-                ""Culture""
-                ""neutral""
-        NamedType:
-          ""TArg""
-      1
+                Qualification:
+                  ""Culture""
+                  ""neutral""
+          NamedType:
+            ""TArg""
+        1
 ";
 
 			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -54,24 +55,25 @@ namespace TypeInterpretation.Test
 			const string ExpectedDiffs =
 @"ByRef:
   Pointer:
-    ArrayType:
-      Generic:
-        NamedType:
-          ""Nested""
+    SZArrayType:
+      ArrayType:
+        Generic:
           NamedType:
+            ""Nested""
+            NamedType:
 <<<<<<<
-            ""TypeName""
+              ""TypeName""
 =======
-            ""AnotherName""
+              ""AnotherName""
 >>>>>>>
-            Assembly:
-              ""Foo""
-              Qualification:
-                ""Culture""
-                ""neutral""
-        NamedType:
-          ""TArg""
-      1
+              Assembly:
+                ""Foo""
+                Qualification:
+                  ""Culture""
+                  ""neutral""
+          NamedType:
+            ""TArg""
+        1
 ";
 
 			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -85,24 +87,25 @@ namespace TypeInterpretation.Test
 			const string ExpectedDiffs =
 @"ByRef:
   Pointer:
-    ArrayType:
-      Generic:
-        NamedType:
-          ""Nested""
+    SZArrayType:
+      ArrayType:
+        Generic:
           NamedType:
-            ""TypeName""
-            Assembly:
-              ""Foo""
-              Qualification:
+            ""Nested""
+            NamedType:
+              ""TypeName""
+              Assembly:
+                ""Foo""
+                Qualification:
 <<<<<<<
-                ""Culture""
+                  ""Culture""
 =======
-                ""AnotherCulture""
+                  ""AnotherCulture""
 >>>>>>>
-                ""neutral""
-        NamedType:
-          ""TArg""
-      1
+                  ""neutral""
+          NamedType:
+            ""TArg""
+        1
 ";
 
 			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -116,24 +119,25 @@ namespace TypeInterpretation.Test
 			const string ExpectedDiffs =
 @"ByRef:
   Pointer:
-    ArrayType:
-      Generic:
-        NamedType:
-          ""Nested""
+    SZArrayType:
+      ArrayType:
+        Generic:
           NamedType:
-            ""TypeName""
-            Assembly:
-              ""Foo""
-              Qualification:
-                ""Culture""
-                ""neutral""
-        NamedType:
+            ""Nested""
+            NamedType:
+              ""TypeName""
+              Assembly:
+                ""Foo""
+                Qualification:
+                  ""Culture""
+                  ""neutral""
+          NamedType:
 <<<<<<<
-          ""TArg""
+            ""TArg""
 =======
-          ""TArgument""
+            ""TArgument""
 >>>>>>>
-      1
+        1
 ";
 
 			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -147,24 +151,25 @@ namespace TypeInterpretation.Test
 			const string ExpectedDiffs =
 @"ByRef:
   Pointer:
-    ArrayType:
-      Generic:
-        NamedType:
-<<<<<<<
-          ""Nested""
-=======
-          ""AnotherNested""
->>>>>>>
+    SZArrayType:
+      ArrayType:
+        Generic:
           NamedType:
-            ""TypeName""
-            Assembly:
-              ""Foo""
-              Qualification:
-                ""Culture""
-                ""neutral""
-        NamedType:
-          ""TArg""
-      1
+<<<<<<<
+            ""Nested""
+=======
+            ""AnotherNested""
+>>>>>>>
+            NamedType:
+              ""TypeName""
+              Assembly:
+                ""Foo""
+                Qualification:
+                  ""Culture""
+                  ""neutral""
+          NamedType:
+            ""TArg""
+        1
 ";
 
 			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -175,17 +180,18 @@ namespace TypeInterpretation.Test
 		readonly InsType _allTheTypes =
 			ByRefType(
 				PointerType(
-					ArrayType(
-						Generic(
-							NestedType(
-								NamedType(
-									"TypeName",
-									Assembly(
-										"Foo",
-										Qualification("Culture", "neutral"))),
-								"Nested"),
-							NamedType("TArg")),
-						1)));
+					SZArrayType(
+						ArrayType(
+							Generic(
+								NestedType(
+									NamedType(
+										"TypeName",
+										Assembly(
+											"Foo",
+											Qualification("Culture", "neutral"))),
+									"Nested"),
+								NamedType("TArg")),
+							1))));
 
 		sealed class DummyRewriter : InsRewriter<Func<string, string>>
 		{

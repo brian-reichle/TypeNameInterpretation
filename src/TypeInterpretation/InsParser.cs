@@ -83,7 +83,8 @@ namespace TypeInterpretation
 				if (index + 1 < _buffer.Length &&
 					_buffer[index] == '[' &&
 					_buffer[index + 1] != ']' &&
-					_buffer[index + 1] != ',')
+					_buffer[index + 1] != ',' &&
+					_buffer[index + 1] != '*')
 				{
 					var typeArguments = ParseTypeArguments(ref index);
 					type = new InsGenericType(baseType, typeArguments);
@@ -104,16 +105,7 @@ namespace TypeInterpretation
 					}
 					else if (c == '[')
 					{
-						index++;
-						var rank = 1;
-
-						while (TryReadChar(ref index, ','))
-						{
-							rank++;
-						}
-
-						ReadChar(ref index, ']');
-						type = new InsArrayType(type, rank);
+						type = ParseArrayDetails(ref index, type);
 					}
 					else
 					{
@@ -127,6 +119,33 @@ namespace TypeInterpretation
 				}
 
 				return type;
+			}
+
+			InsType ParseArrayDetails(ref int index, InsType elementType)
+			{
+				index++;
+
+				if (TryReadChar(ref index, ']'))
+				{
+					return new InsSZArrayType(elementType);
+				}
+
+				var rank = 1;
+				ParseArrayRank(ref index);
+
+				while (TryReadChar(ref index, ','))
+				{
+					rank++;
+					ParseArrayRank(ref index);
+				}
+
+				ReadChar(ref index, ']');
+				return new InsArrayType(elementType, rank);
+			}
+
+			void ParseArrayRank(ref int index)
+			{
+				TryReadChar(ref index, '*');
 			}
 
 			ImmutableArray<InsType> ParseTypeArguments(ref int index)

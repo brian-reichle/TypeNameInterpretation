@@ -66,7 +66,19 @@ namespace TypeInterpretation.Test
 					case InsTypeKind.Generic:
 						DiffGenericType(indent, (InsGenericType)type1, (InsGenericType)type2);
 						break;
+
+					case InsTypeKind.SZArray:
+						DiffSZArray(indent, (InsSZArrayType)type1, (InsSZArrayType)type2);
+						break;
 				}
+			}
+
+			void DiffSZArray(int indent, InsSZArrayType type1, InsSZArrayType type2)
+			{
+				FormatLabel(indent, "SZArrayType");
+
+				indent++;
+				DiffType(indent, type1.ElementType, type2.ElementType);
 			}
 
 			void DiffTypes(int indent, ImmutableArray<InsType> types1, ImmutableArray<InsType> types2)
@@ -252,9 +264,21 @@ namespace TypeInterpretation.Test
 						FormatGeneric(indent, (InsGenericType)type);
 						break;
 
+					case InsTypeKind.SZArray:
+						FormatSZArray(indent, (InsSZArrayType)type);
+						break;
+
 					default:
 						throw new ArgumentException("Unknown type kind: " + type.Kind, nameof(type));
 				}
+			}
+
+			void FormatSZArray(int indent, InsSZArrayType type)
+			{
+				FormatLabel(indent, "SZArrayType");
+
+				indent++;
+				FormatType(indent, type.ElementType);
 			}
 
 			void FormatGeneric(int indent, InsGenericType type)

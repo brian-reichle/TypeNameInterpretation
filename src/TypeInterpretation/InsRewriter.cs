@@ -105,6 +105,23 @@ namespace TypeInterpretation
 			return new InsGenericType(definition, typeArguments);
 		}
 
+		public virtual InsType VisitSZArray(InsSZArrayType type, TArgument argument)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			var elementType = type.ElementType.Apply(this, argument);
+
+			if (elementType == type.ElementType)
+			{
+				return type;
+			}
+
+			return new InsSZArrayType(elementType);
+		}
+
 		public virtual ImmutableArray<InsType> VisitTypes(ImmutableArray<InsType> typeArguments, TArgument argument)
 		{
 			ImmutableArray<InsType>.Builder? builder = null;

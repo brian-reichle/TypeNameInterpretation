@@ -7,5 +7,6 @@ namespace TypeInterpretation
 		TReturn VisitPointer(InsPointerType type, TArgument argument);
 		TReturn VisitByRef(InsByRefType type, TArgument argument);
 		TReturn VisitGeneric(InsGenericType type, TArgument argument);
+		TReturn VisitSZArray(InsSZArrayType type, TArgument argument);
 	}
 }

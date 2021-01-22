@@ -26,6 +26,9 @@ namespace TypeInterpretation
 		public static InsGenericType Generic(InsNamedType definition, ImmutableArray<InsType> typeArguments)
 			=> new InsGenericType(definition, typeArguments);
 
+		public static InsSZArrayType SZArrayType(InsType elementType)
+			=> new InsSZArrayType(elementType);
+
 		public static InsAssembly Assembly(string name, params InsAssemblyQualification[] qualifications)
 			=> new InsAssembly(name, ImmutableArray.Create(qualifications));
 

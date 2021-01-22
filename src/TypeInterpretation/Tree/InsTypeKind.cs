@@ -7,5 +7,6 @@ namespace TypeInterpretation
 		Array,
 		Named,
 		Generic,
+		SZArray,
 	}
 }

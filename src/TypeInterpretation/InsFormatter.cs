@@ -62,7 +62,20 @@ namespace TypeInterpretation
 			}
 
 			public StringBuilder VisitArray(InsArrayType type, StringBuilder builder)
-				=> type.ElementType.Apply(this, builder).Append('[').Append(',', type.Rank - 1).Append(']');
+			{
+				type.ElementType.Apply(this, builder).Append('[');
+
+				if (type.Rank == 1)
+				{
+					builder.Append('*');
+				}
+				else
+				{
+					builder.Append(',', type.Rank - 1);
+				}
+
+				return builder.Append(']');
+			}
 
 			public StringBuilder VisitNamed(InsNamedType type, StringBuilder builder)
 			{
@@ -105,6 +118,9 @@ namespace TypeInterpretation
 
 				return builder;
 			}
+
+			public StringBuilder VisitSZArray(InsSZArrayType type, StringBuilder argument)
+				=> type.ElementType.Apply(this, argument).Append("[]");
 
 			public static StringBuilder WriteAssembly(InsAssembly assembly, StringBuilder builder)
 			{
@@ -166,6 +182,7 @@ namespace TypeInterpretation
 			public InsAssembly? VisitPointer(InsPointerType type, object argument) => type.ElementType.Apply(this, argument);
 			public InsAssembly? VisitByRef(InsByRefType type, object argument) => type.ElementType.Apply(this, argument);
 			public InsAssembly? VisitGeneric(InsGenericType type, object argument) => VisitNamed(type.Definition, argument);
+			public InsAssembly? VisitSZArray(InsSZArrayType type, object argument) => type.ElementType.Apply(this, argument);
 
 			public InsAssembly? VisitNamed(InsNamedType type, object argument)
 			{
