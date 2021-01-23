@@ -29,10 +29,15 @@ namespace TypeInterpretation.Test
 			return Format(NamedType("Foo", Assembly(identifier)));
 		}
 
-		[Test]
-		public void FullyQualifiedNamedType()
+		[TestCase("Culture", "", ExpectedResult = "Foo, Bar, Culture=\"\"")]
+		[TestCase("Culture", "neutral", ExpectedResult = "Foo, Bar, Culture=neutral")]
+		[TestCase("x\"y", "x\"y", ExpectedResult = "Foo, Bar, x\\\"y=\"x\\\"y\"")]
+		[TestCase("x\\y", "x\\y", ExpectedResult = "Foo, Bar, x\\\\y=\"x\\\\y\"")]
+		[TestCase("[xy]", "[xy]", ExpectedResult = "Foo, Bar, \\[xy\\]=\"[xy]\"")]
+		[TestCase("Culture", "\"xy\"", ExpectedResult = "Foo, Bar, Culture=\"\\\"xy\\\"\"")]
+		public string FullyQualifiedNamedType(string name, string value)
 		{
-			Assert.That(Format(NamedType("Foo", _qualifiedAssembly)), Is.EqualTo("Foo, Bar, Culture=neutral"));
+			return Format(NamedType("Foo", Assembly("Bar", Qualification(name, value))));
 		}
 
 		[TestCase(true, true, ExpectedResult = "Foo`2[[Baz, Bar],[Quux, Bar, Culture=neutral]], Bar")]

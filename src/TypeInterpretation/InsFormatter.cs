@@ -128,11 +128,18 @@ namespace TypeInterpretation
 
 				foreach (var qualification in assembly.Qualifications)
 				{
-					builder
-						.Append(", ")
-						.Append(qualification.Name)
-						.Append('=')
-						.Append(qualification.Value);
+					builder.Append(", ");
+					WriteIdentifier(qualification.Name, builder);
+					builder.Append('=');
+
+					if (RequiresQuoting(qualification.Value))
+					{
+						WriteQuotedIdentifier(qualification.Value, builder);
+					}
+					else
+					{
+						WriteIdentifier(qualification.Value, builder);
+					}
 				}
 
 				return builder;
@@ -144,30 +151,44 @@ namespace TypeInterpretation
 
 				for (var i = 0; i < identifier.Length; i++)
 				{
-					switch (identifier[i])
+					if (Array.IndexOf(Delimiters, identifier[i]) >= 0)
 					{
-						case ',':
-						case '[':
-						case ']':
-						case '&':
-						case '*':
-						case '+':
-						case '\\':
-							break;
+						builder
+							.Append(identifier, start, i - start)
+							.Append('\\');
 
-						default:
-							continue;
+						start = i;
 					}
-
-					builder
-						.Append(identifier, start, i - start)
-						.Append('\\');
-
-					start = i;
 				}
 
 				builder.Append(identifier, start, identifier.Length - start);
 			}
+
+			static void WriteQuotedIdentifier(string identifier, StringBuilder builder)
+			{
+				builder.Append('"');
+				var start = 0;
+
+				for (var i = 0; i < identifier.Length; i++)
+				{
+					var c = identifier[i];
+
+					if (c == '\\' || c == '"')
+					{
+						builder.Append(identifier, start, i - start);
+						builder.Append('\\');
+						start = i;
+					}
+				}
+
+				builder.Append(identifier, start, identifier.Length - start);
+				builder.Append('"');
+			}
+
+			static bool RequiresQuoting(string identifier)
+				=> string.IsNullOrEmpty(identifier) || identifier.IndexOfAny(Delimiters) >= 0;
+
+			static readonly char[] Delimiters = { '\\', '[', ']', ',', '+', '&', '*', '=', '"' };
 		}
 
 		sealed class AssemblyLocator : IInsTypeVisitor<object, InsAssembly?>
