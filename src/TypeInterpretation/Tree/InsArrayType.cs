@@ -15,6 +15,13 @@ namespace TypeInterpretation
 		public override InsTypeKind Kind => InsTypeKind.Array;
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
-			=> visitor.VisitArray(this, argument);
+		{
+			if (visitor == null)
+			{
+				throw new ArgumentNullException(nameof(visitor));
+			}
+
+			return visitor.VisitArray(this, argument);
+		}
 	}
 }

@@ -13,6 +13,13 @@ namespace TypeInterpretation
 		public override InsTypeKind Kind => InsTypeKind.Pointer;
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
-			=> visitor.VisitPointer(this, argument);
+		{
+			if (visitor == null)
+			{
+				throw new ArgumentNullException(nameof(visitor));
+			}
+
+			return visitor.VisitPointer(this, argument);
+		}
 	}
 }
