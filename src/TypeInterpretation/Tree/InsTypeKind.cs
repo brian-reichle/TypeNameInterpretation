@@ -2,11 +2,11 @@ namespace TypeInterpretation
 {
 	public enum InsTypeKind
 	{
-		Pointer,
-		ByRef,
 		Array,
-		Named,
+		ByRef,
 		Generic,
+		Named,
+		Pointer,
 		SZArray,
 	}
 }

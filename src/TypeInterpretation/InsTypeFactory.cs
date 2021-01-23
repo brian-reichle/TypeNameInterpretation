@@ -8,23 +8,23 @@ namespace TypeInterpretation
 		public static InsArrayType ArrayType(InsType elementType, int array)
 			=> new InsArrayType(elementType, array);
 
-		public static InsNamedType NamedType(string name, InsAssembly? assembly = null)
-			=> new InsNamedType(name, assembly);
-
-		public static InsPointerType PointerType(InsType elementType)
-			=> new InsPointerType(elementType);
-
 		public static InsByRefType ByRefType(InsType elementType)
 			=> new InsByRefType(elementType);
-
-		public static InsNamedType NestedType(InsNamedType declaringType, string name)
-			=> new InsNamedType(name, declaringType);
 
 		public static InsGenericType Generic(InsNamedType definition, params InsType[] typeArguments)
 			=> Generic(definition, ImmutableArray.Create(typeArguments));
 
 		public static InsGenericType Generic(InsNamedType definition, ImmutableArray<InsType> typeArguments)
 			=> new InsGenericType(definition, typeArguments);
+
+		public static InsNamedType NamedType(string name, InsAssembly? assembly = null)
+			=> new InsNamedType(name, assembly);
+
+		public static InsNamedType NestedType(InsNamedType declaringType, string name)
+			=> new InsNamedType(name, declaringType);
+
+		public static InsPointerType PointerType(InsType elementType)
+			=> new InsPointerType(elementType);
 
 		public static InsSZArrayType SZArrayType(InsType elementType)
 			=> new InsSZArrayType(elementType);

@@ -22,6 +22,41 @@ namespace TypeInterpretation
 			return new InsArrayType(elementType, type.Rank);
 		}
 
+		public virtual InsType VisitByRef(InsByRefType type, TArgument argument)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			var inner = type.ElementType.Apply(this, argument);
+
+			if (inner == type.ElementType)
+			{
+				return type;
+			}
+
+			return new InsByRefType(inner);
+		}
+
+		public virtual InsType VisitGeneric(InsGenericType type, TArgument argument)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			var definition = (InsNamedType)type.Definition.Apply(this, argument);
+			var typeArguments = VisitTypes(type.TypeArguments, argument);
+
+			if (definition == type.Definition && typeArguments == type.TypeArguments)
+			{
+				return type;
+			}
+
+			return new InsGenericType(definition, typeArguments);
+		}
+
 		public virtual InsType VisitNamed(InsNamedType type, TArgument argument)
 		{
 			if (type == null)
@@ -68,41 +103,6 @@ namespace TypeInterpretation
 			}
 
 			return new InsPointerType(inner);
-		}
-
-		public virtual InsType VisitByRef(InsByRefType type, TArgument argument)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
-			var inner = type.ElementType.Apply(this, argument);
-
-			if (inner == type.ElementType)
-			{
-				return type;
-			}
-
-			return new InsByRefType(inner);
-		}
-
-		public virtual InsType VisitGeneric(InsGenericType type, TArgument argument)
-		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
-			var definition = (InsNamedType)type.Definition.Apply(this, argument);
-			var typeArguments = VisitTypes(type.TypeArguments, argument);
-
-			if (definition == type.Definition && typeArguments == type.TypeArguments)
-			{
-				return type;
-			}
-
-			return new InsGenericType(definition, typeArguments);
 		}
 
 		public virtual InsType VisitSZArray(InsSZArrayType type, TArgument argument)

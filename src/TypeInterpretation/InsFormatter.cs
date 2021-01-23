@@ -77,22 +77,6 @@ namespace TypeInterpretation
 				return builder.Append(']');
 			}
 
-			public StringBuilder VisitNamed(InsNamedType type, StringBuilder builder)
-			{
-				if (type.DeclaringType != null)
-				{
-					type.DeclaringType.Apply(this, builder);
-					builder.Append('+');
-				}
-
-				WriteIdentifier(type.Name, builder);
-
-				return builder;
-			}
-
-			public StringBuilder VisitPointer(InsPointerType type, StringBuilder builder)
-				=> type.ElementType.Apply(this, builder).Append('*');
-
 			public StringBuilder VisitByRef(InsByRefType type, StringBuilder builder)
 				=> type.ElementType.Apply(this, builder).Append('&');
 
@@ -118,6 +102,22 @@ namespace TypeInterpretation
 
 				return builder;
 			}
+
+			public StringBuilder VisitNamed(InsNamedType type, StringBuilder builder)
+			{
+				if (type.DeclaringType != null)
+				{
+					type.DeclaringType.Apply(this, builder);
+					builder.Append('+');
+				}
+
+				WriteIdentifier(type.Name, builder);
+
+				return builder;
+			}
+
+			public StringBuilder VisitPointer(InsPointerType type, StringBuilder builder)
+				=> type.ElementType.Apply(this, builder).Append('*');
 
 			public StringBuilder VisitSZArray(InsSZArrayType type, StringBuilder argument)
 				=> type.ElementType.Apply(this, argument).Append("[]");
@@ -179,12 +179,13 @@ namespace TypeInterpretation
 			}
 
 			public InsAssembly? VisitArray(InsArrayType type, object argument) => type.ElementType.Apply(this, argument);
-			public InsAssembly? VisitPointer(InsPointerType type, object argument) => type.ElementType.Apply(this, argument);
 			public InsAssembly? VisitByRef(InsByRefType type, object argument) => type.ElementType.Apply(this, argument);
-			public InsAssembly? VisitGeneric(InsGenericType type, object argument) => VisitNamed(type.Definition, argument);
+			public InsAssembly? VisitGeneric(InsGenericType type, object argument) => AssemblyFromNamed(type.Definition);
+			public InsAssembly? VisitNamed(InsNamedType type, object argument) => AssemblyFromNamed(type);
+			public InsAssembly? VisitPointer(InsPointerType type, object argument) => type.ElementType.Apply(this, argument);
 			public InsAssembly? VisitSZArray(InsSZArrayType type, object argument) => type.ElementType.Apply(this, argument);
 
-			public InsAssembly? VisitNamed(InsNamedType type, object argument)
+			static InsAssembly? AssemblyFromNamed(InsNamedType type)
 			{
 				while (type.DeclaringType != null)
 				{

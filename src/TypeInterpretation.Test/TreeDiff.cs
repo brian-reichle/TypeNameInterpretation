@@ -47,10 +47,6 @@ namespace TypeInterpretation.Test
 
 				switch (type1.Kind)
 				{
-					case InsTypeKind.Named:
-						DiffNamedType(indent, (InsNamedType)type1, (InsNamedType)type2);
-						break;
-
 					case InsTypeKind.Array:
 						DiffArrayType(indent, (InsArrayType)type1, (InsArrayType)type2);
 						break;
@@ -59,18 +55,66 @@ namespace TypeInterpretation.Test
 						DiffByRefType(indent, (InsByRefType)type1, (InsByRefType)type2);
 						break;
 
-					case InsTypeKind.Pointer:
-						DiffPointerType(indent, (InsPointerType)type1, (InsPointerType)type2);
-						break;
-
 					case InsTypeKind.Generic:
 						DiffGenericType(indent, (InsGenericType)type1, (InsGenericType)type2);
+						break;
+
+					case InsTypeKind.Named:
+						DiffNamedType(indent, (InsNamedType)type1, (InsNamedType)type2);
+						break;
+
+					case InsTypeKind.Pointer:
+						DiffPointerType(indent, (InsPointerType)type1, (InsPointerType)type2);
 						break;
 
 					case InsTypeKind.SZArray:
 						DiffSZArray(indent, (InsSZArrayType)type1, (InsSZArrayType)type2);
 						break;
 				}
+			}
+
+			void DiffArrayType(int indent, InsArrayType type1, InsArrayType type2)
+			{
+				FormatLabel(indent, "ArrayType");
+
+				indent++;
+				DiffType(indent, type1.ElementType, type2.ElementType);
+				DiffLiteral(indent, type1.Rank, type2.Rank);
+			}
+
+			void DiffByRefType(int indent, InsByRefType type1, InsByRefType type2)
+			{
+				FormatLabel(indent, "ByRef");
+
+				indent++;
+				DiffType(indent, type1.ElementType, type2.ElementType);
+			}
+
+			void DiffGenericType(int indent, InsGenericType type1, InsGenericType type2)
+			{
+				FormatLabel(indent, "Generic");
+
+				indent++;
+				DiffType(indent, type1.Definition, type2.Definition);
+				DiffTypes(indent, type1.TypeArguments, type2.TypeArguments);
+			}
+
+			void DiffNamedType(int indent, InsNamedType type1, InsNamedType type2)
+			{
+				FormatLabel(indent, "NamedType");
+
+				indent++;
+				DiffLiteral(indent, type1.Name, type2.Name);
+				DiffType(indent, type1.DeclaringType, type2.DeclaringType);
+				DiffAssembly(indent, type1.Assembly, type2.Assembly);
+			}
+
+			void DiffPointerType(int indent, InsPointerType type1, InsPointerType type2)
+			{
+				FormatLabel(indent, "Pointer");
+
+				indent++;
+				DiffType(indent, type1.ElementType, type2.ElementType);
 			}
 
 			void DiffSZArray(int indent, InsSZArrayType type1, InsSZArrayType type2)
@@ -94,50 +138,6 @@ namespace TypeInterpretation.Test
 						DiffType(indent, types1[i], types2[i]);
 					}
 				}
-			}
-
-			void DiffGenericType(int indent, InsGenericType type1, InsGenericType type2)
-			{
-				FormatLabel(indent, "Generic");
-
-				indent++;
-				DiffType(indent, type1.Definition, type2.Definition);
-				DiffTypes(indent, type1.TypeArguments, type2.TypeArguments);
-			}
-
-			void DiffPointerType(int indent, InsPointerType type1, InsPointerType type2)
-			{
-				FormatLabel(indent, "Pointer");
-
-				indent++;
-				DiffType(indent, type1.ElementType, type2.ElementType);
-			}
-
-			void DiffByRefType(int indent, InsByRefType type1, InsByRefType type2)
-			{
-				FormatLabel(indent, "ByRef");
-
-				indent++;
-				DiffType(indent, type1.ElementType, type2.ElementType);
-			}
-
-			void DiffArrayType(int indent, InsArrayType type1, InsArrayType type2)
-			{
-				FormatLabel(indent, "ArrayType");
-
-				indent++;
-				DiffType(indent, type1.ElementType, type2.ElementType);
-				DiffLiteral(indent, type1.Rank, type2.Rank);
-			}
-
-			void DiffNamedType(int indent, InsNamedType type1, InsNamedType type2)
-			{
-				FormatLabel(indent, "NamedType");
-
-				indent++;
-				DiffLiteral(indent, type1.Name, type2.Name);
-				DiffType(indent, type1.DeclaringType, type2.DeclaringType);
-				DiffAssembly(indent, type1.Assembly, type2.Assembly);
 			}
 
 			void DiffAssembly(int indent, InsAssembly? assembly1, InsAssembly? assembly2)
@@ -227,14 +227,6 @@ namespace TypeInterpretation.Test
 				}
 			}
 
-			void FormatTypes(int indent, ImmutableArray<InsType> types)
-			{
-				foreach (var typeArg in types)
-				{
-					FormatType(indent, typeArg);
-				}
-			}
-
 			public void FormatType(int indent, InsType? type)
 			{
 				if (type == null)
@@ -244,10 +236,6 @@ namespace TypeInterpretation.Test
 
 				switch (type.Kind)
 				{
-					case InsTypeKind.Named:
-						FormatNamed(indent, (InsNamedType)type);
-						break;
-
 					case InsTypeKind.Array:
 						FormatArray(indent, (InsArrayType)type);
 						break;
@@ -256,12 +244,16 @@ namespace TypeInterpretation.Test
 						FormatByRef(indent, (InsByRefType)type);
 						break;
 
-					case InsTypeKind.Pointer:
-						FormatPointer(indent, (InsPointerType)type);
-						break;
-
 					case InsTypeKind.Generic:
 						FormatGeneric(indent, (InsGenericType)type);
+						break;
+
+					case InsTypeKind.Named:
+						FormatNamed(indent, (InsNamedType)type);
+						break;
+
+					case InsTypeKind.Pointer:
+						FormatPointer(indent, (InsPointerType)type);
 						break;
 
 					case InsTypeKind.SZArray:
@@ -273,9 +265,18 @@ namespace TypeInterpretation.Test
 				}
 			}
 
-			void FormatSZArray(int indent, InsSZArrayType type)
+			void FormatArray(int indent, InsArrayType type)
 			{
-				FormatLabel(indent, "SZArrayType");
+				FormatLabel(indent, "ArrayType");
+
+				indent++;
+				FormatType(indent, type.ElementType);
+				FormatLiteral(indent, type.Rank);
+			}
+
+			void FormatByRef(int indent, InsByRefType type)
+			{
+				FormatLabel(indent, "ByRef");
 
 				indent++;
 				FormatType(indent, type.ElementType);
@@ -290,31 +291,6 @@ namespace TypeInterpretation.Test
 				FormatTypes(indent, type.TypeArguments);
 			}
 
-			void FormatPointer(int indent, InsPointerType type)
-			{
-				FormatLabel(indent, "Pointer");
-
-				indent++;
-				FormatType(indent, type.ElementType);
-			}
-
-			void FormatByRef(int indent, InsByRefType type)
-			{
-				FormatLabel(indent, "ByRef");
-
-				indent++;
-				FormatType(indent, type.ElementType);
-			}
-
-			void FormatArray(int indent, InsArrayType type)
-			{
-				FormatLabel(indent, "ArrayType");
-
-				indent++;
-				FormatType(indent, type.ElementType);
-				FormatLiteral(indent, type.Rank);
-			}
-
 			void FormatNamed(int indent, InsNamedType type)
 			{
 				FormatLabel(indent, "NamedType");
@@ -323,6 +299,30 @@ namespace TypeInterpretation.Test
 				FormatLiteral(indent, type.Name);
 				FormatType(indent, type.DeclaringType);
 				FormatAssembly(indent, type.Assembly);
+			}
+
+			void FormatPointer(int indent, InsPointerType type)
+			{
+				FormatLabel(indent, "Pointer");
+
+				indent++;
+				FormatType(indent, type.ElementType);
+			}
+
+			void FormatSZArray(int indent, InsSZArrayType type)
+			{
+				FormatLabel(indent, "SZArrayType");
+
+				indent++;
+				FormatType(indent, type.ElementType);
+			}
+
+			void FormatTypes(int indent, ImmutableArray<InsType> types)
+			{
+				foreach (var typeArg in types)
+				{
+					FormatType(indent, typeArg);
+				}
 			}
 
 			void FormatAssembly(int indent, InsAssembly? assembly)
