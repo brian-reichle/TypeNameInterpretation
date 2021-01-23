@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="TypeInterpretation" ToolsVersion="14.0">
   <Include Path="TypeInterpretation.ruleset" Action="Default" />
-  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1303" Action="None" />
-    <Rule Id="CA1812" Action="None" />
-    <Rule Id="CA1822" Action="None" />
-    <Rule Id="CA2202" Action="None" />
-  </Rules>
   <Rules AnalyzerId="nunit.analyzers" RuleNamespace="nunit.analyzers">
     <Rule Id="NUnit2001" Action="Warning" />
     <Rule Id="NUnit2002" Action="Warning" />
