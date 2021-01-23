@@ -44,7 +44,7 @@ namespace TypeInterpretation.Test
         1
 ";
 
-			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
 		[Test]
@@ -76,7 +76,7 @@ namespace TypeInterpretation.Test
         1
 ";
 
-			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
 		[Test]
@@ -108,7 +108,7 @@ namespace TypeInterpretation.Test
         1
 ";
 
-			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
 		[Test]
@@ -140,7 +140,7 @@ namespace TypeInterpretation.Test
         1
 ";
 
-			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace TypeInterpretation.Test
         1
 ";
 
-			Assert.That(TreeDiff.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
 		string Replace(string text, string oldValue, string newValue) => text == oldValue ? newValue : text;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TypeInterpretation.Test
 {
-	static class TreeDiff
+	static class TreeRenderer
 	{
 		public static string Diff(InsType type1, InsType type2)
 		{

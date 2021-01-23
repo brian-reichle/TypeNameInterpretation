@@ -41,7 +41,7 @@ namespace TypeInterpretation.Test
   ""Foo.Bar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace TypeInterpretation.Test
     ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -73,7 +73,7 @@ namespace TypeInterpretation.Test
       ""3.14""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar, Culture=neutral, Version=3.14")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar, Culture=neutral, Version=3.14")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace TypeInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar+Baz, FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar+Baz, FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -104,7 +104,7 @@ namespace TypeInterpretation.Test
     ""Baz""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace TypeInterpretation.Test
     ""Quux""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`2[Baz,Quux], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`2[Baz,Quux], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -142,7 +142,7 @@ namespace TypeInterpretation.Test
     ""Barry""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`3[Baz,Quux,Barry], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`3[Baz,Quux,Barry], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -160,7 +160,7 @@ namespace TypeInterpretation.Test
       ""FooBaz""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[[Baz, FooBaz]], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[[Baz, FooBaz]], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -177,7 +177,7 @@ namespace TypeInterpretation.Test
       ""Baz""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -194,7 +194,7 @@ namespace TypeInterpretation.Test
       ""Baz""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -208,7 +208,7 @@ namespace TypeInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -223,7 +223,7 @@ namespace TypeInterpretation.Test
   1
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[*], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[*], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -238,7 +238,7 @@ namespace TypeInterpretation.Test
   2
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -255,7 +255,7 @@ namespace TypeInterpretation.Test
   1
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][*], FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][*], FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -269,7 +269,7 @@ namespace TypeInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar*, FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar*, FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -284,7 +284,7 @@ namespace TypeInterpretation.Test
         ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar**, FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar**, FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -298,7 +298,7 @@ namespace TypeInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Foo.Bar&, FooBar")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar&, FooBar")), Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -328,7 +328,7 @@ namespace TypeInterpretation.Test
 ";
 
 			// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
-			Assert.That(TreeDiff.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
+			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
 		}
 	}
 }
