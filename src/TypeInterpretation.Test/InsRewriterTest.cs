@@ -21,27 +21,24 @@ namespace TypeInterpretation.Test
 			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Foo", "Bar"));
 
 			const string ExpectedDiffs =
-@"ByRef:
-  Pointer:
-    SZArrayType:
-      ArrayType:
-        Generic:
-          NamedType:
-            ""Nested""
-            NamedType:
-              ""TypeName""
-              Assembly:
-<<<<<<<
-                ""Foo""
-=======
-                ""Bar""
->>>>>>>
-                Qualification:
-                  ""Culture""
-                  ""neutral""
-          NamedType:
-            ""TArg""
-        1
+@"~ByRef:
+~  Pointer:
+~    SZArrayType:
+~      ArrayType:
+~        Generic:
+~          NamedType:
+             ""Nested""
+~            NamedType:
+               ""TypeName""
+~              Assembly:
+-                ""Foo""
++                ""Bar""
+                 Qualification:
+                   ""Culture""
+                   ""neutral""
+           NamedType:
+             ""TArg""
+         1
 ";
 
 			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -53,27 +50,24 @@ namespace TypeInterpretation.Test
 			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TypeName", "AnotherName"));
 
 			const string ExpectedDiffs =
-@"ByRef:
-  Pointer:
-    SZArrayType:
-      ArrayType:
-        Generic:
-          NamedType:
-            ""Nested""
-            NamedType:
-<<<<<<<
-              ""TypeName""
-=======
-              ""AnotherName""
->>>>>>>
-              Assembly:
-                ""Foo""
-                Qualification:
-                  ""Culture""
-                  ""neutral""
-          NamedType:
-            ""TArg""
-        1
+@"~ByRef:
+~  Pointer:
+~    SZArrayType:
+~      ArrayType:
+~        Generic:
+~          NamedType:
+             ""Nested""
+~            NamedType:
+-              ""TypeName""
++              ""AnotherName""
+               Assembly:
+                 ""Foo""
+                 Qualification:
+                   ""Culture""
+                   ""neutral""
+           NamedType:
+             ""TArg""
+         1
 ";
 
 			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -85,27 +79,24 @@ namespace TypeInterpretation.Test
 			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Culture", "AnotherCulture"));
 
 			const string ExpectedDiffs =
-@"ByRef:
-  Pointer:
-    SZArrayType:
-      ArrayType:
-        Generic:
-          NamedType:
-            ""Nested""
-            NamedType:
-              ""TypeName""
-              Assembly:
-                ""Foo""
-                Qualification:
-<<<<<<<
-                  ""Culture""
-=======
-                  ""AnotherCulture""
->>>>>>>
-                  ""neutral""
-          NamedType:
-            ""TArg""
-        1
+@"~ByRef:
+~  Pointer:
+~    SZArrayType:
+~      ArrayType:
+~        Generic:
+~          NamedType:
+             ""Nested""
+~            NamedType:
+               ""TypeName""
+~              Assembly:
+                 ""Foo""
+~                Qualification:
+-                  ""Culture""
++                  ""AnotherCulture""
+                   ""neutral""
+           NamedType:
+             ""TArg""
+         1
 ";
 
 			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -117,27 +108,24 @@ namespace TypeInterpretation.Test
 			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TArg", "TArgument"));
 
 			const string ExpectedDiffs =
-@"ByRef:
-  Pointer:
-    SZArrayType:
-      ArrayType:
-        Generic:
-          NamedType:
-            ""Nested""
-            NamedType:
-              ""TypeName""
-              Assembly:
-                ""Foo""
-                Qualification:
-                  ""Culture""
-                  ""neutral""
-          NamedType:
-<<<<<<<
-            ""TArg""
-=======
-            ""TArgument""
->>>>>>>
-        1
+@"~ByRef:
+~  Pointer:
+~    SZArrayType:
+~      ArrayType:
+~        Generic:
+           NamedType:
+             ""Nested""
+             NamedType:
+               ""TypeName""
+               Assembly:
+                 ""Foo""
+                 Qualification:
+                   ""Culture""
+                   ""neutral""
+~          NamedType:
+-            ""TArg""
++            ""TArgument""
+         1
 ";
 
 			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
@@ -149,33 +137,30 @@ namespace TypeInterpretation.Test
 			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Nested", "AnotherNested"));
 
 			const string ExpectedDiffs =
-@"ByRef:
-  Pointer:
-    SZArrayType:
-      ArrayType:
-        Generic:
-          NamedType:
-<<<<<<<
-            ""Nested""
-=======
-            ""AnotherNested""
->>>>>>>
-            NamedType:
-              ""TypeName""
-              Assembly:
-                ""Foo""
-                Qualification:
-                  ""Culture""
-                  ""neutral""
-          NamedType:
-            ""TArg""
-        1
+@"~ByRef:
+~  Pointer:
+~    SZArrayType:
+~      ArrayType:
+~        Generic:
+~          NamedType:
+-            ""Nested""
++            ""AnotherNested""
+             NamedType:
+               ""TypeName""
+               Assembly:
+                 ""Foo""
+                 Qualification:
+                   ""Culture""
+                   ""neutral""
+           NamedType:
+             ""TArg""
+         1
 ";
 
 			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
 		}
 
-		string Replace(string text, string oldValue, string newValue) => text == oldValue ? newValue : text;
+		static string Replace(string text, string oldValue, string newValue) => text == oldValue ? newValue : text;
 
 		readonly InsType _allTheTypes =
 			ByRefType(

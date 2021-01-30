@@ -16,9 +16,14 @@ namespace TypeInterpretation.Test
 		public static string Format(InsType type)
 		{
 			var builder = new StringBuilder();
-			new Context(builder).FormatType(0, type);
+			new Context(builder).FormatType('\0', 0, type);
 			return builder.ToString();
 		}
+
+		const char Value1 = '-';
+		const char Value2 = '+';
+		const char Similar = '~';
+		const char Same = ' ';
 
 		struct Context
 		{
@@ -31,17 +36,14 @@ namespace TypeInterpretation.Test
 			{
 				if (type1 == type2)
 				{
-					FormatType(indent, type1);
+					FormatType(Same, indent, type1);
 					return;
 				}
 
 				if (type1 == null || type2 == null || type1.Kind != type2.Kind)
 				{
-					StartLeft();
-					FormatType(indent, type1);
-					StartRight();
-					FormatType(indent, type2);
-					StartMatch();
+					FormatType(Value1, indent, type1);
+					FormatType(Value2, indent, type2);
 					return;
 				}
 
@@ -75,7 +77,7 @@ namespace TypeInterpretation.Test
 
 			void DiffArrayType(int indent, InsArrayType type1, InsArrayType type2)
 			{
-				FormatLabel(indent, "ArrayType");
+				FormatLabel(Similar, indent, "ArrayType");
 
 				indent++;
 				DiffType(indent, type1.ElementType, type2.ElementType);
@@ -84,7 +86,7 @@ namespace TypeInterpretation.Test
 
 			void DiffByRefType(int indent, InsByRefType type1, InsByRefType type2)
 			{
-				FormatLabel(indent, "ByRef");
+				FormatLabel(Similar, indent, "ByRef");
 
 				indent++;
 				DiffType(indent, type1.ElementType, type2.ElementType);
@@ -92,7 +94,7 @@ namespace TypeInterpretation.Test
 
 			void DiffGenericType(int indent, InsGenericType type1, InsGenericType type2)
 			{
-				FormatLabel(indent, "Generic");
+				FormatLabel(Similar, indent, "Generic");
 
 				indent++;
 				DiffType(indent, type1.Definition, type2.Definition);
@@ -101,7 +103,7 @@ namespace TypeInterpretation.Test
 
 			void DiffNamedType(int indent, InsNamedType type1, InsNamedType type2)
 			{
-				FormatLabel(indent, "NamedType");
+				FormatLabel(Similar, indent, "NamedType");
 
 				indent++;
 				DiffLiteral(indent, type1.Name, type2.Name);
@@ -111,7 +113,7 @@ namespace TypeInterpretation.Test
 
 			void DiffPointerType(int indent, InsPointerType type1, InsPointerType type2)
 			{
-				FormatLabel(indent, "Pointer");
+				FormatLabel(Similar, indent, "Pointer");
 
 				indent++;
 				DiffType(indent, type1.ElementType, type2.ElementType);
@@ -119,7 +121,7 @@ namespace TypeInterpretation.Test
 
 			void DiffSZArray(int indent, InsSZArrayType type1, InsSZArrayType type2)
 			{
-				FormatLabel(indent, "SZArrayType");
+				FormatLabel(Similar, indent, "SZArrayType");
 
 				indent++;
 				DiffType(indent, type1.ElementType, type2.ElementType);
@@ -129,7 +131,7 @@ namespace TypeInterpretation.Test
 			{
 				if (types1 == types2)
 				{
-					FormatTypes(indent, types1);
+					FormatTypes(Same, indent, types1);
 				}
 				else
 				{
@@ -142,21 +144,18 @@ namespace TypeInterpretation.Test
 
 			void DiffAssembly(int indent, InsAssembly? assembly1, InsAssembly? assembly2)
 			{
-				if (assembly1 == assembly2)
+				if (ReferenceEquals(assembly1, assembly2))
 				{
-					FormatAssembly(indent, assembly1);
+					FormatAssembly(Same, indent, assembly1);
 				}
 				else if (assembly1 == null || assembly2 == null)
 				{
-					StartLeft();
-					FormatAssembly(indent, assembly1);
-					StartRight();
-					FormatAssembly(indent, assembly2);
-					StartMatch();
+					FormatAssembly(Value1, indent, assembly1);
+					FormatAssembly(Value2, indent, assembly2);
 				}
 				else
 				{
-					FormatLabel(indent, "Assembly");
+					FormatLabel(Similar, indent, "Assembly");
 
 					indent++;
 					DiffLiteral(indent, assembly1.Name, assembly2.Name);
@@ -168,7 +167,7 @@ namespace TypeInterpretation.Test
 			{
 				if (qualifications1 == qualifications2)
 				{
-					FormatQualifications(indent, qualifications1);
+					FormatQualifications(Same, indent, qualifications1);
 				}
 				else
 				{
@@ -181,13 +180,13 @@ namespace TypeInterpretation.Test
 
 			void DiffQualification(int indent, InsAssemblyQualification qualification1, InsAssemblyQualification qualification2)
 			{
-				if (qualification1 == qualification2)
+				if (ReferenceEquals(qualification1, qualification2))
 				{
-					FormatQualification(indent, qualification1);
+					FormatQualification(Same, indent, qualification1);
 				}
 				else
 				{
-					FormatLabel(indent, "Qualification");
+					FormatLabel(Similar, indent, "Qualification");
 
 					indent++;
 					DiffLiteral(indent, qualification1.Name, qualification2.Name);
@@ -197,17 +196,18 @@ namespace TypeInterpretation.Test
 
 			void DiffLiteral(int indent, string value1, string value2)
 			{
-				if (value1 == value2)
+				if (ReferenceEquals(value1, value2))
 				{
-					FormatLiteral(indent, value1);
+					FormatLiteral(Same, indent, value1);
+				}
+				else if (value1 == value2)
+				{
+					FormatLiteral(Similar, indent, value1);
 				}
 				else
 				{
-					StartLeft();
-					FormatLiteral(indent, value1);
-					StartRight();
-					FormatLiteral(indent, value2);
-					StartMatch();
+					FormatLiteral(Value1, indent, value1);
+					FormatLiteral(Value2, indent, value2);
 				}
 			}
 
@@ -215,19 +215,16 @@ namespace TypeInterpretation.Test
 			{
 				if (value1 == value2)
 				{
-					FormatLiteral(indent, value1);
+					FormatLiteral(Same, indent, value1);
 				}
 				else
 				{
-					StartLeft();
-					FormatLiteral(indent, value1);
-					StartRight();
-					FormatLiteral(indent, value2);
-					StartMatch();
+					FormatLiteral(Value1, indent, value1);
+					FormatLiteral(Value2, indent, value2);
 				}
 			}
 
-			public void FormatType(int indent, InsType? type)
+			public void FormatType(char prefix, int indent, InsType? type)
 			{
 				if (type == null)
 				{
@@ -237,27 +234,27 @@ namespace TypeInterpretation.Test
 				switch (type.Kind)
 				{
 					case InsTypeKind.Array:
-						FormatArray(indent, (InsArrayType)type);
+						FormatArray(prefix, indent, (InsArrayType)type);
 						break;
 
 					case InsTypeKind.ByRef:
-						FormatByRef(indent, (InsByRefType)type);
+						FormatByRef(prefix, indent, (InsByRefType)type);
 						break;
 
 					case InsTypeKind.Generic:
-						FormatGeneric(indent, (InsGenericType)type);
+						FormatGeneric(prefix, indent, (InsGenericType)type);
 						break;
 
 					case InsTypeKind.Named:
-						FormatNamed(indent, (InsNamedType)type);
+						FormatNamed(prefix, indent, (InsNamedType)type);
 						break;
 
 					case InsTypeKind.Pointer:
-						FormatPointer(indent, (InsPointerType)type);
+						FormatPointer(prefix, indent, (InsPointerType)type);
 						break;
 
 					case InsTypeKind.SZArray:
-						FormatSZArray(indent, (InsSZArrayType)type);
+						FormatSZArray(prefix, indent, (InsSZArrayType)type);
 						break;
 
 					default:
@@ -265,104 +262,104 @@ namespace TypeInterpretation.Test
 				}
 			}
 
-			void FormatArray(int indent, InsArrayType type)
+			void FormatArray(char prefix, int indent, InsArrayType type)
 			{
-				FormatLabel(indent, "ArrayType");
+				FormatLabel(prefix, indent, "ArrayType");
 
 				indent++;
-				FormatType(indent, type.ElementType);
-				FormatLiteral(indent, type.Rank);
+				FormatType(prefix, indent, type.ElementType);
+				FormatLiteral(prefix, indent, type.Rank);
 			}
 
-			void FormatByRef(int indent, InsByRefType type)
+			void FormatByRef(char prefix, int indent, InsByRefType type)
 			{
-				FormatLabel(indent, "ByRef");
+				FormatLabel(prefix, indent, "ByRef");
 
 				indent++;
-				FormatType(indent, type.ElementType);
+				FormatType(prefix, indent, type.ElementType);
 			}
 
-			void FormatGeneric(int indent, InsGenericType type)
+			void FormatGeneric(char prefix, int indent, InsGenericType type)
 			{
-				FormatLabel(indent, "Generic");
+				FormatLabel(prefix, indent, "Generic");
 
 				indent++;
-				FormatType(indent, type.Definition);
-				FormatTypes(indent, type.TypeArguments);
+				FormatType(prefix, indent, type.Definition);
+				FormatTypes(prefix, indent, type.TypeArguments);
 			}
 
-			void FormatNamed(int indent, InsNamedType type)
+			void FormatNamed(char prefix, int indent, InsNamedType type)
 			{
-				FormatLabel(indent, "NamedType");
+				FormatLabel(prefix, indent, "NamedType");
 
 				indent++;
-				FormatLiteral(indent, type.Name);
-				FormatType(indent, type.DeclaringType);
-				FormatAssembly(indent, type.Assembly);
+				FormatLiteral(prefix, indent, type.Name);
+				FormatType(prefix, indent, type.DeclaringType);
+				FormatAssembly(prefix, indent, type.Assembly);
 			}
 
-			void FormatPointer(int indent, InsPointerType type)
+			void FormatPointer(char prefix, int indent, InsPointerType type)
 			{
-				FormatLabel(indent, "Pointer");
+				FormatLabel(prefix, indent, "Pointer");
 
 				indent++;
-				FormatType(indent, type.ElementType);
+				FormatType(prefix, indent, type.ElementType);
 			}
 
-			void FormatSZArray(int indent, InsSZArrayType type)
+			void FormatSZArray(char prefix, int indent, InsSZArrayType type)
 			{
-				FormatLabel(indent, "SZArrayType");
+				FormatLabel(prefix, indent, "SZArrayType");
 
 				indent++;
-				FormatType(indent, type.ElementType);
+				FormatType(prefix, indent, type.ElementType);
 			}
 
-			void FormatTypes(int indent, ImmutableArray<InsType> types)
+			void FormatTypes(char prefix, int indent, ImmutableArray<InsType> types)
 			{
 				foreach (var typeArg in types)
 				{
-					FormatType(indent, typeArg);
+					FormatType(prefix, indent, typeArg);
 				}
 			}
 
-			void FormatAssembly(int indent, InsAssembly? assembly)
+			void FormatAssembly(char prefix, int indent, InsAssembly? assembly)
 			{
 				if (assembly != null)
 				{
-					FormatLabel(indent, "Assembly");
+					FormatLabel(prefix, indent, "Assembly");
 
 					indent++;
-					FormatLiteral(indent, assembly.Name);
-					FormatQualifications(indent, assembly.Qualifications);
+					FormatLiteral(prefix, indent, assembly.Name);
+					FormatQualifications(prefix, indent, assembly.Qualifications);
 				}
 			}
 
-			void FormatQualifications(int indent, ImmutableArray<InsAssemblyQualification> qualifications)
+			void FormatQualifications(char prefix, int indent, ImmutableArray<InsAssemblyQualification> qualifications)
 			{
 				foreach (var qualification in qualifications)
 				{
-					FormatQualification(indent, qualification);
+					FormatQualification(prefix, indent, qualification);
 				}
 			}
 
-			void FormatQualification(int indent, InsAssemblyQualification qualification)
+			void FormatQualification(char prefix, int indent, InsAssemblyQualification qualification)
 			{
-				FormatLabel(indent, "Qualification");
+				FormatLabel(prefix, indent, "Qualification");
 
 				indent++;
-				FormatLiteral(indent, qualification.Name);
-				FormatLiteral(indent, qualification.Value);
+				FormatLiteral(prefix, indent, qualification.Name);
+				FormatLiteral(prefix, indent, qualification.Value);
 			}
 
-			void FormatLabel(int indent, string label)
+			void FormatLabel(char prefix, int indent, string label)
 			{
-				WriteIndent(indent);
+				WriteIndent(prefix, indent);
 				_builder.Append(label).Append(':').AppendLine();
 			}
 
-			void FormatLiteral(int indent, string value)
+			void FormatLiteral(char prefix, int indent, string value)
 			{
-				WriteIndent(indent);
+				WriteIndent(prefix, indent);
 
 				if (value == null)
 				{
@@ -377,18 +374,23 @@ namespace TypeInterpretation.Test
 					.AppendLine();
 			}
 
-			void FormatLiteral(int indent, int value)
+			void FormatLiteral(char prefix, int indent, int value)
 			{
-				WriteIndent(indent);
+				WriteIndent(prefix, indent);
 				_builder
 					.Append(value)
 					.AppendLine();
 			}
 
-			void WriteIndent(int indent) => _builder.Append(' ', indent * 2);
-			void StartLeft() => _builder.AppendLine("<<<<<<<");
-			void StartRight() => _builder.AppendLine("=======");
-			void StartMatch() => _builder.AppendLine(">>>>>>>");
+			void WriteIndent(char prefix, int indent)
+			{
+				if (prefix != '\0')
+				{
+					_builder.Append(prefix);
+				}
+
+				_builder.Append(' ', indent * 2);
+			}
 
 			readonly StringBuilder _builder;
 		}
