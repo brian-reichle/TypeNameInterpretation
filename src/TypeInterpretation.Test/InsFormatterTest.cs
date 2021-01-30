@@ -18,6 +18,13 @@ namespace TypeInterpretation.Test
 			return Format(NamedType(identifierName));
 		}
 
+		[Test]
+		public void AvoidAllocationsOnSimpleAssemblyNames()
+		{
+			var name = "Foo";
+			Assert.That(Format(Assembly(name)), Is.SameAs(name));
+		}
+
 		[TestCase("Bar", ExpectedResult = "Foo, Bar")]
 		[TestCase("[Bar]", ExpectedResult = "Foo, \\[Bar\\]")]
 		[TestCase("Bar&", ExpectedResult = "Foo, Bar\\&")]

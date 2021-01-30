@@ -36,7 +36,18 @@ namespace TypeInterpretation
 		}
 
 		public static string Format(InsType type) => Write(new StringBuilder(), type).ToString();
-		public static string Format(InsAssembly assembly) => Write(new StringBuilder(), assembly).ToString();
+
+		public static string Format(InsAssembly assembly)
+		{
+			if (assembly.Qualifications.Length == 0 && assembly.Name.IndexOfAny(Delimiters) < 0)
+			{
+				return assembly.Name;
+			}
+
+			return Write(new StringBuilder(), assembly).ToString();
+		}
+
+		static readonly char[] Delimiters = { '\\', '[', ']', ',', '+', '&', '*', '=', '"' };
 
 		sealed class Writer : IInsTypeVisitor<StringBuilder, StringBuilder>
 		{
@@ -187,8 +198,6 @@ namespace TypeInterpretation
 
 			static bool RequiresQuoting(string identifier)
 				=> string.IsNullOrEmpty(identifier) || identifier.IndexOfAny(Delimiters) >= 0;
-
-			static readonly char[] Delimiters = { '\\', '[', ']', ',', '+', '&', '*', '=', '"' };
 		}
 
 		sealed class AssemblyLocator : IInsTypeVisitor<object, InsAssembly?>
