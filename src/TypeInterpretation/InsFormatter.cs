@@ -39,15 +39,13 @@ namespace TypeInterpretation
 
 		public static string Format(InsAssembly assembly)
 		{
-			if (assembly.Qualifications.Length == 0 && assembly.Name.IndexOfAny(Delimiters) < 0)
+			if (assembly.Qualifications.Length == 0 && assembly.Name.IndexOfAny(Delimiters.All) < 0)
 			{
 				return assembly.Name;
 			}
 
 			return Write(new StringBuilder(), assembly).ToString();
 		}
-
-		static readonly char[] Delimiters = { '\\', '[', ']', ',', '+', '&', '*', '=', '"' };
 
 		sealed class Writer : IInsTypeVisitor<StringBuilder, StringBuilder>
 		{
@@ -162,7 +160,7 @@ namespace TypeInterpretation
 
 				for (var i = 0; i < identifier.Length; i++)
 				{
-					if (Array.IndexOf(Delimiters, identifier[i]) >= 0)
+					if (Array.IndexOf(Delimiters.All, identifier[i]) >= 0)
 					{
 						builder
 							.Append(identifier, start, i - start)
@@ -197,7 +195,7 @@ namespace TypeInterpretation
 			}
 
 			static bool RequiresQuoting(string identifier)
-				=> string.IsNullOrEmpty(identifier) || identifier.IndexOfAny(Delimiters) >= 0;
+				=> string.IsNullOrEmpty(identifier) || identifier.IndexOfAny(Delimiters.All) >= 0;
 		}
 
 		sealed class AssemblyLocator : IInsTypeVisitor<object, InsAssembly?>

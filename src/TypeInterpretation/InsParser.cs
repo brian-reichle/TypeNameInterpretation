@@ -218,99 +218,64 @@ namespace TypeInterpretation
 			{
 				AssertNotEOF(index);
 
-				var name = _buffer[index] == '"'
-					? ParseQuotedIdentifier(ref index)
-					: ParseIdentifier(ref index);
-
+				var name = ParseQuoteableIdentifier(ref index);
 				ReadChar(ref index, '=');
-
-				var value = _buffer[index] == '"'
-					? ParseQuotedIdentifier(ref index)
-					: ParseIdentifier(ref index);
+				var value = ParseQuoteableIdentifier(ref index);
 
 				return new InsAssemblyQualification(name, value);
 			}
 
-			string ParseIdentifier(ref int index)
+			string ParseQuoteableIdentifier(ref int index)
 			{
-				var start = index;
-				StringBuilder? builder = null;
-
-				while (index < _buffer.Length)
+				if (TryReadChar(ref index, '"'))
 				{
-					var c = _buffer[index];
-
-					switch (c)
-					{
-						case '*':
-						case '[':
-						case ']':
-						case ',':
-						case '&':
-						case '+':
-						case '=':
-							goto done;
-
-						case '\\':
-							builder ??= new StringBuilder();
-							builder.Append(_buffer.Slice(start, index - start));
-							start = index + 1;
-							index += 2;
-
-							if (index > _buffer.Length)
-							{
-								ThrowEOF();
-							}
-							break;
-
-						default:
-							index++;
-							break;
-					}
+					var result = ParseIdentifierCore(ref index, Delimiters.Quote);
+					ReadChar(ref index, '"');
+					return result;
 				}
 
-			done:
-				var slice = _buffer.Slice(start, index - start);
-
-				return builder == null
-					? slice.ToString()
-					: builder.Append(slice).ToString();
+				return ParseIdentifier(ref index);
 			}
 
-			string ParseQuotedIdentifier(ref int index)
+			string ParseIdentifier(ref int index) => ParseIdentifierCore(ref index, Delimiters.All);
+
+			string ParseIdentifierCore(ref int index, ReadOnlySpan<char> delimiters)
 			{
-				ReadChar(ref index, '"');
-				StringBuilder? builder = null;
+				AssertNotEOF(index);
+
 				var start = index;
+				StringBuilder? builder = null;
 
-				while (index < _buffer.Length)
+				while (true)
 				{
-					var c = _buffer[index];
+					var i = _buffer.Slice(index).IndexOfAny(delimiters);
 
-					if (c == '"')
+					if (i < 0)
+					{
+						index = _buffer.Length;
+						break;
+					}
+
+					index += i;
+
+					if (_buffer[index] != '\\')
 					{
 						break;
 					}
-					else if (c == '\\')
-					{
-						builder ??= new StringBuilder();
-						builder.Append(_buffer.Slice(start, index - start));
-						start = index + 1;
-						index += 2;
-					}
-					else
-					{
-						index++;
-					}
+
+					builder ??= new StringBuilder();
+					builder.Append(_buffer.Slice(start, index - start));
+					start = index + 1;
+
+					AssertNotEOF(start);
+					index = start + 1;
 				}
 
-				var slice = _buffer.Slice(start, index - start);
-
-				ReadChar(ref index, '"');
+				var section = _buffer.Slice(start, index - start);
 
 				return builder == null
-					? slice.ToString()
-					: builder.Append(slice).ToString();
+					? section.ToString()
+					: builder.Append(section).ToString();
 			}
 
 			void DiscardWhitespace(ref int index)

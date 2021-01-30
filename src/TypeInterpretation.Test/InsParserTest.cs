@@ -24,7 +24,7 @@ namespace TypeInterpretation.Test
 		[TestCase("Foo, \"Bar\"=\"Baz\"", "Bar|Baz")]
 		[TestCase("Foo, Bar=Baz\\,", "Bar|Baz,")]
 		[TestCase("Foo, Bar=\"Baz,\"", "Bar|Baz,")]
-		[TestCase("Foo, Bar=Ba\"z", "Bar|Ba\"z")]
+		[TestCase("Foo, Bar=Ba\\\"z", "Bar|Ba\"z")]
 		[TestCase("Foo, Bar=\"Ba\\\"z\"", "Bar|Ba\"z")]
 		public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
 		{
