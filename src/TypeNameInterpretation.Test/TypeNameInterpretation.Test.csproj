@@ -21,6 +21,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TypeInterpretation\TypeInterpretation.csproj" />
+    <ProjectReference Include="..\TypeNameInterpretation\TypeNameInterpretation.csproj" />
   </ItemGroup>
 </Project>
