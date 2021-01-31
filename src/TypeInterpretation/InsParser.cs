@@ -32,8 +32,8 @@ namespace TypeInterpretation
 			return result;
 		}
 
-		static void ThrowEOF() => throw new FormatException("Unexpected end of format.");
-		static void ThrowUnexpected(int index) => throw new FormatException("Unexpected char at position " + index + ".");
+		static void ThrowEOF() => throw new InvalidTypeNameException("Unexpected end of format.");
+		static void ThrowUnexpected(int index) => throw new InvalidTypeNameException("Unexpected char at position " + index + ".");
 
 		ref struct Context
 		{
