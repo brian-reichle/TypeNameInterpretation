@@ -33,6 +33,28 @@ namespace TypeInterpretation.Test
 			Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications));
 		}
 
+		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
+		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected char at position 8.")]
+		[TestCase("Foo, Bar", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo, Bar=", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo, Bar==", ExpectedResult = "Unexpected char at position 9.")]
+		[TestCase("Foo, Bar=\"Baz", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo, \\", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo, \"\\", ExpectedResult = "Unexpected end of format.")]
+		public string? Assembly_Invalid(string assemblyName)
+		{
+			try
+			{
+				InsTypeFactory.ParseAssemblyName(assemblyName);
+				Assert.Fail("Expected to throw an InvalidTypeNameException.");
+				return null;
+			}
+			catch (InvalidTypeNameException ex)
+			{
+				return ex.Message;
+			}
+		}
+
 		[Test]
 		public void Type_Unqualified()
 		{
@@ -329,6 +351,26 @@ namespace TypeInterpretation.Test
 
 			// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
 			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
+		}
+
+		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
+		[TestCase("Foo[*][A]", ExpectedResult = "Unexpected char at position 7.")]
+		[TestCase("Foo&[]", ExpectedResult = "Unexpected char at position 4.")]
+		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
+		[TestCase("Foo[", ExpectedResult = "Unexpected end of format.")]
+		public string? Type_Invalid(string typeName)
+		{
+			try
+			{
+				InsTypeFactory.ParseTypeName(typeName);
+				Assert.Fail("Expected to throw an InvalidTypeNameException.");
+				return null;
+			}
+			catch (InvalidTypeNameException ex)
+			{
+				return ex.Message;
+			}
 		}
 	}
 }
