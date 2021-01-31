@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_1
 namespace System.Text
 {
 	static class StringBuilderExtensions
@@ -13,3 +14,4 @@ namespace System.Text
 		}
 	}
 }
+#endif
