@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [ opened, synchronize ]
+
+jobs:
+  build:
+    name: Build ${{ matrix.configuration }}
+
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        configuration: [ Debug, Release ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.402
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.101
+    - name: Build TypeNameInterpretation
+      run: dotnet build src --configuration ${{ matrix.configuration }}
+    - name: Run Tests
+      if: matrix.configuration == 'Debug'
+      run: dotnet test src --no-build
