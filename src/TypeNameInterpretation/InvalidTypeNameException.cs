@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	[Serializable]
 	public sealed class InvalidTypeNameException : FormatException

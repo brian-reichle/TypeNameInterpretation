@@ -1,4 +1,4 @@
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	public interface IInsTypeVisitor<TArgument, TReturn>
 	{

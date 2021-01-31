@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	public abstract class InsRewriter<TArgument> : IInsTypeVisitor<TArgument, InsType>
 	{

@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using static TypeInterpretation.InsTypeFactory;
+using static TypeNameInterpretation.InsTypeFactory;
 
-namespace TypeInterpretation.Test
+namespace TypeNameInterpretation.Test
 {
 	[TestFixture]
 	class InsRewriterTest

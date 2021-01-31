@@ -1,6 +1,6 @@
 using System;
 
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	public sealed class InsAssemblyQualification
 	{

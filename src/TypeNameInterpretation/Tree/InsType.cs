@@ -1,4 +1,4 @@
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	public abstract class InsType
 	{

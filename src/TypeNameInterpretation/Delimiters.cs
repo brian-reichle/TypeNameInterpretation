@@ -1,4 +1,4 @@
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	static class Delimiters
 	{

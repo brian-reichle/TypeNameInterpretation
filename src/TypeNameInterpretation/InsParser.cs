@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	static class InsParser
 	{

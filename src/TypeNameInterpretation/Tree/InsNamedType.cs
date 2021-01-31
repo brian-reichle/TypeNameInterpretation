@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Immutable;
 
-namespace TypeInterpretation
+namespace TypeNameInterpretation
 {
 	public sealed class InsNamedType : InsType
 	{
