@@ -32,3 +32,6 @@ jobs:
     - name: Run Tests
       if: matrix.configuration == 'Debug'
       run: dotnet test src --no-build
+    - name: Package TypeNameInterpretation
+      if: matrix.configuration == 'Release'
+      run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=%GITHUB_SHA% -p:RepositoryBranch=%GITHUB_REF%
