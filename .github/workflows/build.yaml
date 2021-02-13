@@ -35,3 +35,11 @@ jobs:
     - name: Package TypeNameInterpretation
       if: matrix.configuration == 'Release'
       run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=%GITHUB_SHA% -p:RepositoryBranch=%GITHUB_REF%
+    - name: Save Artifacts
+      if: matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: bin\TypeNameInterpretation\${{ matrix.configuration }}\*.nupkg
+        if-no-files-found: error
+
