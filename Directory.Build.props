@@ -20,6 +20,10 @@ CS1591 - Missing XML comment.
 		<Product>TypeInterpretation</Product>
 		<Copyright>Copyright (c) Brian Reichle</Copyright>
 
+		<PackageProjectUrl>https://github.com/brian-reichle/TypeNameInterpretation</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/brian-reichle/TypeNameInterpretation</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 
