@@ -37,7 +37,7 @@ jobs:
       run: dotnet test src --no-build
     - name: Package TypeNameInterpretation
       if: matrix.configuration == 'Release'
-      run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=%GITHUB_SHA% -p:RepositoryBranch=%GITHUB_REF%
+      run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=${{ github.sha }} -p:RepositoryBranch=${{ github.ref }}
     - name: Save Artifacts
       if: matrix.configuration == 'Release'
       uses: actions/upload-artifact@v2
