@@ -7,38 +7,50 @@ namespace TypeNameInterpretation
 	{
 		public static bool TryGetVersion(this InsAssembly assembly, [NotNullWhen(true)] out Version? version)
 		{
-			if (assembly.TryGetQualification(WellKnownQualificationNames.Version, out var value) &&
-				Version.TryParse(value, out version))
+			if (!assembly.TryGetQualification(WellKnownQualificationNames.Version, out var value))
 			{
-				return true;
+				version = null;
+				return false;
 			}
 
-			version = null;
-			return false;
+			if (!Version.TryParse(value, out version))
+			{
+				throw new FormatException("Version qualification was provided, but was in an unrecognised format.");
+			}
+
+			return true;
 		}
 
 		public static bool TryGetPublicKey(this InsAssembly assembly, out byte[]? publicKey)
 		{
-			if (assembly.TryGetQualification(WellKnownQualificationNames.PublicKey, out var value) &&
-				TryParseBlob(value, out publicKey))
+			if (!assembly.TryGetQualification(WellKnownQualificationNames.PublicKey, out var value))
 			{
-				return true;
+				publicKey = null;
+				return false;
 			}
 
-			publicKey = null;
-			return false;
+			if (!TryParseBlob(value, out publicKey))
+			{
+				throw new FormatException("PublicKey qualification was provided, but was in an unrecognised format.");
+			}
+
+			return true;
 		}
 
 		public static bool TryGetPublicKeyToken(this InsAssembly assembly, out byte[]? publicKeyToken)
 		{
-			if (assembly.TryGetQualification(WellKnownQualificationNames.PublicKeyToken, out var value) &&
-				TryParseBlob(value, out publicKeyToken))
+			if (!assembly.TryGetQualification(WellKnownQualificationNames.PublicKeyToken, out var value))
 			{
-				return true;
+				publicKeyToken = null;
+				return false;
 			}
 
-			publicKeyToken = null;
-			return false;
+			if (!TryParseBlob(value, out publicKeyToken))
+			{
+				throw new FormatException("PublicKeyToken qualification was provided, but was in an unrecognised format.");
+			}
+
+			return true;
 		}
 
 		public static bool TryGetQualification(this InsAssembly assembly, string name, [NotNullWhen(true)] out string? value)
