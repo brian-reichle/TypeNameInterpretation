@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace TypeNameInterpretation
 {
@@ -68,6 +70,88 @@ namespace TypeNameInterpretation
 			return false;
 		}
 
+		public static InsAssembly WithVersion(this InsAssembly assembly, Version version)
+			=> assembly.WithQualification(WellKnownQualificationNames.Version, version.ToString());
+
+		public static InsAssembly WithPublicKey(this InsAssembly assembly, ReadOnlySpan<byte> publicKey)
+			=> assembly.WithQualification(WellKnownQualificationNames.PublicKey, FormatBlob(publicKey));
+
+		public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[] publicKey)
+		{
+			if (publicKey == null)
+			{
+				return assembly.WithQualification(WellKnownQualificationNames.PublicKey, NullBlob);
+			}
+			else
+			{
+				return assembly.WithPublicKey(publicKey.AsSpan());
+			}
+		}
+
+		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, ReadOnlySpan<byte> publicKeyToken)
+			=> assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, FormatBlob(publicKeyToken));
+
+		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[] publicKeyToken)
+		{
+			if (publicKeyToken == null)
+			{
+				return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, NullBlob);
+			}
+			else
+			{
+				return assembly.WithPublicKeyToken(publicKeyToken.AsSpan());
+			}
+		}
+
+		public static InsAssembly WithQualification(this InsAssembly assembly, string name, string value)
+			=> assembly.WithQualifications(assembly.Qualifications.WithQualification(name, value));
+
+		public static InsAssembly WithoutQualification(this InsAssembly assembly, string name)
+			=> assembly.WithQualifications(assembly.Qualifications.WithoutQualification(name));
+
+		static InsAssembly WithQualifications(this InsAssembly assembly, ImmutableArray<InsAssemblyQualification> newQualifications)
+		{
+			if (newQualifications == assembly.Qualifications)
+			{
+				return assembly;
+			}
+
+			return new InsAssembly(assembly.Name, newQualifications);
+		}
+
+		static ImmutableArray<InsAssemblyQualification> WithQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name, string value)
+		{
+			for (var i = 0; i < qualifications.Length; i++)
+			{
+				var qualification = qualifications[i];
+
+				if (qualification.Name == name)
+				{
+					if (qualification.Value == value)
+					{
+						return qualifications;
+					}
+
+					return qualifications.SetItem(i, new InsAssemblyQualification(name, value));
+				}
+			}
+
+			return qualifications.Add(new InsAssemblyQualification(name, value));
+		}
+
+		static ImmutableArray<InsAssemblyQualification> WithoutQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name)
+		{
+			for (var i = 0; i < qualifications.Length; i++)
+			{
+				if (qualifications[i].Name == name)
+				{
+					return qualifications.RemoveAt(i);
+				}
+			}
+
+			return qualifications;
+		}
+
 		static bool TryParseBlob(string value, out byte[]? blob)
 		{
 			if (value.Length == 0)
@@ -75,7 +159,7 @@ namespace TypeNameInterpretation
 				blob = Array.Empty<byte>();
 				return true;
 			}
-			else if (value == "null")
+			else if (value == NullBlob)
 			{
 				blob = null;
 				return true;
@@ -114,6 +198,28 @@ namespace TypeNameInterpretation
 			return true;
 		}
 
+		static string FormatBlob(ReadOnlySpan<byte> blob)
+		{
+			if (blob.Length == 0)
+			{
+				return string.Empty;
+			}
+
+			var builder = new StringBuilder(blob.Length * 2);
+			var charLookup = "0123456789ABCDEF";
+
+			for (var i = 0; i < blob.Length; i++)
+			{
+				var b = blob[i];
+
+				builder
+					.Append(charLookup[b >> 4])
+					.Append(charLookup[b & 0xF]);
+			}
+
+			return builder.ToString();
+		}
+
 		static int CharValue(char c)
 		{
 			if (c >= '0' && c <= '9')
@@ -133,5 +239,7 @@ namespace TypeNameInterpretation
 				return -1;
 			}
 		}
+
+		const string NullBlob = "null";
 	}
 }

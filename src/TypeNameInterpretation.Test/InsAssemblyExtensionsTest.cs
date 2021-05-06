@@ -106,5 +106,74 @@ namespace TypeNameInterpretation.Test
 
 			return result ?? "<null>";
 		}
+
+		[TestCase("Foo", "1.0", ExpectedResult = "Foo, Version=1.0")]
+		[TestCase("Foo, Version=1.0", "1.0", ExpectedResult = "Foo, Version=1.0")]
+		[TestCase("Foo, Version=1.0", "2.0", ExpectedResult = "Foo, Version=2.0")]
+		public string WithVersion(string assemblyName, string version)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithVersion(Version.Parse(version)));
+		}
+
+		[TestCase("Foo", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKeyToken=0123456789ABCDEF")]
+		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKeyToken=0123456789ABCDEF")]
+		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", new byte[] { 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67 }, ExpectedResult = "Foo, PublicKeyToken=89ABCDEF01234567")]
+		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", null, ExpectedResult = "Foo, PublicKeyToken=null")]
+		public string WithPublicKeyToken(string assemblyName, byte[] publicKey)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithPublicKeyToken(publicKey));
+		}
+
+		[TestCase("Foo", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKey=0123456789ABCDEF")]
+		[TestCase("Foo, PublicKey=0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKey=0123456789ABCDEF")]
+		[TestCase("Foo, PublicKey=0123456789ABCDEF", new byte[] { 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67 }, ExpectedResult = "Foo, PublicKey=89ABCDEF01234567")]
+		[TestCase("Foo, PublicKey=0123456789ABCDEF", null, ExpectedResult = "Foo, PublicKey=null")]
+		public string WithPublicKey(string assemblyName, byte[] publicKey)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithPublicKey(publicKey));
+		}
+
+		[TestCase("Foo", "Bar", "value", ExpectedResult = "Foo, Bar=value")]
+		[TestCase("Foo, Baz=A, Quux=B", "Bar", "value", ExpectedResult = "Foo, Baz=A, Quux=B, Bar=value")]
+		[TestCase("Foo, Baz=A, Bar=C, Quux=B", "Bar", "value", ExpectedResult = "Foo, Baz=A, Bar=value, Quux=B")]
+		public string WithQualification(string assemblyName, string name, string value)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithQualification(name, value));
+		}
+
+		[TestCase("Foo, Bar=value", "Bar", "value")]
+		public void WithQualification_Unchanged(string assemblyName, string name, string value)
+		{
+			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			var newAssembly = assembly.WithQualification(name, value);
+			Assert.That(newAssembly, Is.SameAs(assembly));
+		}
+
+		[TestCase("Foo", "Bar", ExpectedResult = "Foo")]
+		[TestCase("Foo, Bar=A", "Bar", ExpectedResult = "Foo")]
+		[TestCase("Foo, Baz=A, Bar=B, Quux=C", "Bar", ExpectedResult = "Foo, Baz=A, Quux=C")]
+		public string WithoutQualification(string assemblyName, string name)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithoutQualification(name));
+		}
+
+		[TestCase("Foo", "Bar")]
+		[TestCase("Foo, Baz=A", "Bar")]
+		public void WithoutQualification_Unchanged(string assemblyName, string name)
+		{
+			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			var newAssembly = assembly.WithoutQualification(name);
+			Assert.That(newAssembly, Is.SameAs(assembly));
+		}
 	}
 }
