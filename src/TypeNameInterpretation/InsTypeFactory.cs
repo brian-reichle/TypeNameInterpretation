@@ -5,8 +5,8 @@ namespace TypeNameInterpretation
 {
 	public static class InsTypeFactory
 	{
-		public static InsArrayType ArrayType(InsType elementType, int array)
-			=> new InsArrayType(elementType, array);
+		public static InsArrayType ArrayType(InsType elementType, int rank)
+			=> new InsArrayType(elementType, rank);
 
 		public static InsByRefType ByRefType(InsType elementType)
 			=> new InsByRefType(elementType);
