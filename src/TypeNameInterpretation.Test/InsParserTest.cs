@@ -357,7 +357,6 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo[*][A]", ExpectedResult = "Unexpected char at position 7.")]
 		[TestCase("Foo&[]", ExpectedResult = "Unexpected char at position 4.")]
 		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
 		[TestCase("Foo[", ExpectedResult = "Unexpected end of format.")]
 		public string? Type_Invalid(string typeName)
 		{
