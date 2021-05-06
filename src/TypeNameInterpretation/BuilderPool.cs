@@ -23,8 +23,25 @@ namespace TypeNameInterpretation
 
 		public static void Return(StringBuilder builder)
 		{
+			if (builder.Capacity > 512)
+			{
+				return;
+			}
+
 			builder.Length = 0;
-			Interlocked.CompareExchange(ref _cache, builder, null);
+			var existing = _cache;
+
+			while (existing == null || existing.Capacity < builder.Capacity)
+			{
+				var tmp = Interlocked.CompareExchange(ref _cache, builder, existing);
+
+				if (tmp == existing)
+				{
+					return;
+				}
+
+				existing = tmp;
+			}
 		}
 
 		public static string ToStringAndReturn(this StringBuilder builder)
