@@ -263,7 +263,7 @@ namespace TypeNameInterpretation
 						break;
 					}
 
-					builder ??= new StringBuilder();
+					builder ??= BuilderPool.Rent();
 					builder.Append(_buffer.Slice(start, index - start));
 					start = index + 1;
 
@@ -275,7 +275,7 @@ namespace TypeNameInterpretation
 
 				return builder == null
 					? section.ToString()
-					: builder.Append(section).ToString();
+					: builder.Append(section).ToStringAndReturn();
 			}
 
 			void DiscardWhitespace(ref int index)

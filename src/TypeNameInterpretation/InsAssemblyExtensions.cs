@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace TypeNameInterpretation
 {
@@ -205,7 +204,7 @@ namespace TypeNameInterpretation
 				return string.Empty;
 			}
 
-			var builder = new StringBuilder(blob.Length * 2);
+			var builder = BuilderPool.Rent(blob.Length * 2);
 			var charLookup = "0123456789ABCDEF";
 
 			for (var i = 0; i < blob.Length; i++)
@@ -217,7 +216,7 @@ namespace TypeNameInterpretation
 					.Append(charLookup[b & 0xF]);
 			}
 
-			return builder.ToString();
+			return builder.ToStringAndReturn();
 		}
 
 		static int CharValue(char c)
