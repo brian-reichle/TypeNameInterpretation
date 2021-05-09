@@ -35,7 +35,7 @@ namespace TypeNameInterpretation
 			return Writer.WriteAssembly(assembly, builder);
 		}
 
-		public static string Format(InsType type) => Write(new StringBuilder(), type).ToString();
+		public static string Format(InsType type) => Write(BuilderPool.Rent(), type).ToStringAndReturn();
 
 		public static string Format(InsAssembly assembly)
 		{
@@ -44,7 +44,7 @@ namespace TypeNameInterpretation
 				return assembly.Name;
 			}
 
-			return Write(new StringBuilder(), assembly).ToString();
+			return Write(BuilderPool.Rent(), assembly).ToStringAndReturn();
 		}
 
 		sealed class Writer : IInsTypeVisitor<StringBuilder, StringBuilder>
