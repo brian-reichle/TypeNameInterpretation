@@ -2,14 +2,13 @@ using System;
 
 namespace TypeNameInterpretation
 {
-	public sealed class InsSZArrayType : InsType
+	public sealed class InsSZArrayType : InsElementedType
 	{
 		internal InsSZArrayType(InsType elementType)
+			: base(elementType)
 		{
-			ElementType = elementType ?? throw new ArgumentNullException(nameof(elementType));
 		}
 
-		public InsType ElementType { get; }
 		public override InsTypeKind Kind => InsTypeKind.SZArray;
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)

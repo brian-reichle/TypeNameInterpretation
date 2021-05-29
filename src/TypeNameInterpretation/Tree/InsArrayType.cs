@@ -2,15 +2,14 @@ using System;
 
 namespace TypeNameInterpretation
 {
-	public sealed class InsArrayType : InsType
+	public sealed class InsArrayType : InsElementedType
 	{
 		internal InsArrayType(InsType elementType, int rank)
+			: base(elementType)
 		{
-			ElementType = elementType ?? throw new ArgumentNullException(nameof(elementType));
 			Rank = rank;
 		}
 
-		public InsType ElementType { get; }
 		public int Rank { get; }
 		public override InsTypeKind Kind => InsTypeKind.Array;
 

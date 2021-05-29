@@ -2,14 +2,13 @@ using System;
 
 namespace TypeNameInterpretation
 {
-	public sealed class InsPointerType : InsType
+	public sealed class InsPointerType : InsElementedType
 	{
 		internal InsPointerType(InsType elementType)
+			: base(elementType)
 		{
-			ElementType = elementType ?? throw new ArgumentNullException(nameof(elementType));
 		}
 
-		public InsType ElementType { get; }
 		public override InsTypeKind Kind => InsTypeKind.Pointer;
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
