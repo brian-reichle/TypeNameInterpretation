@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace TypeNameInterpretation
 {
@@ -54,6 +55,18 @@ namespace TypeNameInterpretation
 			return true;
 		}
 
+		public static bool TryGetProcessorArchitecture(this InsAssembly assembly, out ProcessorArchitecture processorArchitecture)
+		{
+			if (assembly.TryGetQualification(WellKnownQualificationNames.ProcessorArchitecture, out var value) &&
+				Enum.TryParse(value, out processorArchitecture))
+			{
+				return true;
+			}
+
+			processorArchitecture = ProcessorArchitecture.None;
+			return false;
+		}
+
 		public static bool TryGetQualification(this InsAssembly assembly, string name, [NotNullWhen(true)] out string? value)
 		{
 			foreach (var qualification in assembly.Qualifications)
@@ -101,6 +114,9 @@ namespace TypeNameInterpretation
 				return assembly.WithPublicKeyToken(publicKeyToken.AsSpan());
 			}
 		}
+
+		public static InsAssembly WithProcessorArchitecture(this InsAssembly assembly, ProcessorArchitecture processorArchitecture)
+			=> assembly.WithQualification(WellKnownQualificationNames.ProcessorArchitecture, processorArchitecture.ToString());
 
 		public static InsAssembly WithQualification(this InsAssembly assembly, string name, string value)
 			=> assembly.WithQualifications(assembly.Qualifications.WithQualification(name, value));
