@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace TypeNameInterpretation.Test
@@ -92,6 +93,17 @@ namespace TypeNameInterpretation.Test
 					.With.Message.EqualTo("PublicKey qualification was provided, but was in an unrecognised format."));
 		}
 
+		[TestCase("Foo", false, ProcessorArchitecture.None)]
+		[TestCase("Foo, ProcessorArchitecture=None", true, ProcessorArchitecture.None)]
+		[TestCase("Foo, ProcessorArchitecture=MSIL", true, ProcessorArchitecture.MSIL)]
+		[TestCase("Foo, ProcessorArchitecture=Amd64", true, ProcessorArchitecture.Amd64)]
+		public void GetProcessorArchitecture(string assemblyName, bool success, ProcessorArchitecture processorArchitecture)
+		{
+			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.That(assembly.TryGetProcessorArchitecture(out var architecture), Is.EqualTo(success));
+			Assert.That(architecture, Is.EqualTo(processorArchitecture));
+		}
+
 		[TestCase("Bar", ExpectedResult = "A")]
 		[TestCase("Baz", ExpectedResult = "B")]
 		[TestCase("Missing", ExpectedResult = null)]
@@ -137,6 +149,16 @@ namespace TypeNameInterpretation.Test
 			return InsFormatter.Format(
 				InsTypeFactory.ParseAssemblyName(assemblyName)
 					.WithPublicKey(publicKey));
+		}
+
+		[TestCase("Foo", ProcessorArchitecture.MSIL, ExpectedResult = "Foo, ProcessorArchitecture=MSIL")]
+		[TestCase("Foo, ProcessorArchitecture=MSIL", ProcessorArchitecture.Arm, ExpectedResult = "Foo, ProcessorArchitecture=Arm")]
+		[TestCase("Foo, ProcessorArchitecture=MSIL", ProcessorArchitecture.X86, ExpectedResult = "Foo, ProcessorArchitecture=X86")]
+		public string TryGetProcessorArchitecture(string assemblyName, ProcessorArchitecture processorArchitecture)
+		{
+			return InsFormatter.Format(
+				InsTypeFactory.ParseAssemblyName(assemblyName)
+					.WithProcessorArchitecture(processorArchitecture));
 		}
 
 		[TestCase("Foo", "Bar", "value", ExpectedResult = "Foo, Bar=value")]
