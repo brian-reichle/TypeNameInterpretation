@@ -2,14 +2,13 @@ using System;
 
 namespace TypeNameInterpretation
 {
-	public sealed class InsByRefType : InsType
+	public sealed class InsByRefType : InsElementedType
 	{
 		internal InsByRefType(InsType elementType)
+			: base(elementType)
 		{
-			ElementType = elementType ?? throw new ArgumentNullException(nameof(elementType));
 		}
 
-		public InsType ElementType { get; }
 		public override InsTypeKind Kind => InsTypeKind.ByRef;
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
