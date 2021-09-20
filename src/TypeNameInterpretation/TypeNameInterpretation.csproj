@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
@@ -15,16 +15,21 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
   </ItemGroup>
   <Choose>
+    <When Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    </When>
     <When Condition="'$(TargetFramework)' == 'netstandard2.1'">
+      <ItemGroup>
+        <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+      </ItemGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       </PropertyGroup>
       <ItemGroup>
+        <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
         <PackageReference Include="System.Memory" Version="4.5.4" />
         <PackageReference Include="Nullable" Version="1.3.0">
           <PrivateAssets>all</PrivateAssets>
