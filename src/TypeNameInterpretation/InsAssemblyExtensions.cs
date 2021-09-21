@@ -57,14 +57,18 @@ namespace TypeNameInterpretation
 
 		public static bool TryGetProcessorArchitecture(this InsAssembly assembly, out ProcessorArchitecture processorArchitecture)
 		{
-			if (assembly.TryGetQualification(WellKnownQualificationNames.ProcessorArchitecture, out var value) &&
-				Enum.TryParse(value, out processorArchitecture))
+			if (!assembly.TryGetQualification(WellKnownQualificationNames.ProcessorArchitecture, out var value))
 			{
-				return true;
+				processorArchitecture = default;
+				return false;
 			}
 
-			processorArchitecture = ProcessorArchitecture.None;
-			return false;
+			if (!Enum.TryParse(value, out processorArchitecture))
+			{
+				throw new FormatException("ProcessorArchitecture qualification was provided, but was unrecognised.");
+			}
+
+			return true;
 		}
 
 		public static bool TryGetQualification(this InsAssembly assembly, string name, [NotNullWhen(true)] out string? value)
