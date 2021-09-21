@@ -1,4 +1,4 @@
-#if !NETSTANDARD2_1
+#if !NETSTANDARD2_1_OR_GREATER && !NETCOREAPP3_1_OR_GREATER
 namespace System.Text
 {
 	static class StringBuilderExtensions
