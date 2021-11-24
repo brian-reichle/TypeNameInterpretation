@@ -19,6 +19,7 @@ CS1591 - Missing XML comment.
 		<Authors>Brian Reichle</Authors>
 		<Product>TypeInterpretation</Product>
 		<Copyright>Copyright (c) Brian Reichle</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
 		<PackageProjectUrl>https://github.com/brian-reichle/TypeNameInterpretation</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/brian-reichle/TypeNameInterpretation</RepositoryUrl>
