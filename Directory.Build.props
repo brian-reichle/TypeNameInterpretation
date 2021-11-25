@@ -30,7 +30,6 @@ CS1591 - Missing XML comment.
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 
 		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\TypeInterpretation.ruleset</CodeAnalysisRuleSet>
-		<CodeAnalysisRuleSet Condition="$(MSBuildProjectFile.Contains('.Test.'))">$(MSBuildThisFileDirectory)build\TypeInterpretation.Test.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugType>full</DebugType>
