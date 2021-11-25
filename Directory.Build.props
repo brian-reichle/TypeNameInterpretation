@@ -14,6 +14,7 @@ CS1591 - Missing XML comment.
 		<NoWarn>1591</NoWarn>
 		<LangVersion>8.0</LangVersion>
 		<Nullable>enable</Nullable>
+		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
 		<Version>0.1.0</Version>
 		<Authors>Brian Reichle</Authors>
@@ -27,9 +28,6 @@ CS1591 - Missing XML comment.
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\TypeInterpretation.ruleset</CodeAnalysisRuleSet>
-		<CodeAnalysisRuleSet Condition="$(MSBuildProjectFile.Contains('.Test.'))">$(MSBuildThisFileDirectory)build\TypeInterpretation.Test.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugType>full</DebugType>
