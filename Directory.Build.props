@@ -23,7 +23,7 @@ CS1591 - Missing XML comment.
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
 		<PackageProjectUrl>https://github.com/brian-reichle/TypeNameInterpretation</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/brian-reichle/TypeNameInterpretation</RepositoryUrl>
+		<RepositoryUrl>https://github.com/brian-reichle/TypeNameInterpretation.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
