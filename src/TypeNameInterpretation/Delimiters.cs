@@ -5,9 +5,9 @@ namespace TypeNameInterpretation
 {
 	static class Delimiters
 	{
-		public static ReadOnlySpan<char> All => _allDelimiterChars;
+		public static ReadOnlySpan<char> All => _allDelimiterChars.AsSpan();
 		public static ReadOnlySpan<char> Quote => _allDelimiterChars.AsSpan(0, 2);
 
-		static readonly char[] _allDelimiterChars = { '\\', '"', '[', ']', ',', '+', '&', '*', '=' };
+		const string _allDelimiterChars = "\\\"[],+&*=";
 	}
 }
