@@ -43,6 +43,8 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: package
-        path: bin\TypeNameInterpretation\${{ matrix.configuration }}\*.nupkg
+        path: |
+          bin\TypeNameInterpretation\${{ matrix.configuration }}\*.nupkg
+          bin\TypeNameInterpretation\${{ matrix.configuration }}\*.snupkg
         if-no-files-found: error
 
