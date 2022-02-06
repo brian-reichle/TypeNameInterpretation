@@ -40,7 +40,7 @@ namespace TypeNameInterpretation
 
 		public static string Format(InsAssembly assembly)
 		{
-			if (assembly.Qualifications.Length == 0 && assembly.Name.IndexOfAny(Delimiters.All) < 0)
+			if (assembly.Qualifications.Length == 0 && assembly.Name.AsSpan().IndexOfAny(Delimiters.All) < 0)
 			{
 				return assembly.Name;
 			}
@@ -161,7 +161,7 @@ namespace TypeNameInterpretation
 
 				for (var i = 0; i < identifier.Length; i++)
 				{
-					if (Array.IndexOf(Delimiters.All, identifier[i]) >= 0)
+					if (Delimiters.All.IndexOf(identifier[i]) >= 0)
 					{
 						builder
 							.Append(identifier, start, i - start)
@@ -196,7 +196,7 @@ namespace TypeNameInterpretation
 			}
 
 			static bool RequiresQuoting(string identifier)
-				=> string.IsNullOrEmpty(identifier) || identifier.IndexOfAny(Delimiters.All) >= 0;
+				=> string.IsNullOrEmpty(identifier) || identifier.AsSpan().IndexOfAny(Delimiters.All) >= 0;
 		}
 
 		sealed class AssemblyLocator : IInsTypeVisitor<object, InsAssembly?>
