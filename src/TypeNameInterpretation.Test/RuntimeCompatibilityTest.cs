@@ -39,7 +39,7 @@ namespace TypeNameInterpretation.Test
 				yield return Test(baseType.MakePointerType());
 				yield return Test(baseType.MakeByRefType());
 
-				static TestCaseData Test(Type type) => new TestCaseData(type);
+				static TestCaseData Test(Type type) => new(type);
 			}
 		}
 	}
