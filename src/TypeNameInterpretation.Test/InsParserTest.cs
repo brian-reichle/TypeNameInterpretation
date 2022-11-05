@@ -30,8 +30,11 @@ namespace TypeNameInterpretation.Test
 		public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
 		{
 			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			Assert.That(assembly.Name, Is.EqualTo("Foo"));
-			Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications));
+			Assert.Multiple(() =>
+			{
+				Assert.That(assembly.Name, Is.EqualTo("Foo"), nameof(assembly.Name));
+				Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications), nameof(assembly.Qualifications));
+			});
 		}
 
 		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]

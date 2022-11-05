@@ -12,18 +12,21 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", null)]
 		public void GetVersion(string assemblyName, string expectedVersion)
 		{
-			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.Multiple(() =>
+			{
+				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
-			if (expectedVersion == null)
-			{
-				Assert.That(assembly.TryGetVersion(out var version), Is.False);
-				Assert.That(version, Is.Null);
-			}
-			else
-			{
-				Assert.That(assembly.TryGetVersion(out var version), Is.True);
-				Assert.That(version, Is.EqualTo(Version.Parse(expectedVersion)));
-			}
+				if (expectedVersion == null)
+				{
+					Assert.That(assembly.TryGetVersion(out var version), Is.False);
+					Assert.That(version, Is.Null);
+				}
+				else
+				{
+					Assert.That(assembly.TryGetVersion(out var version), Is.True);
+					Assert.That(version, Is.EqualTo(Version.Parse(expectedVersion)));
+				}
+			});
 		}
 
 		[TestCase("Foo, Version=invalid")]
@@ -41,18 +44,21 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", false, null)]
 		public void GetPublicKeyToken(string assemblyName, bool success, byte[] token)
 		{
-			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.Multiple(() =>
+			{
+				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
-			if (success)
-			{
-				Assert.That(assembly.TryGetPublicKeyToken(out var value), Is.True);
-				Assert.That(value, Is.EqualTo(token));
-			}
-			else
-			{
-				Assert.That(assembly.TryGetPublicKeyToken(out var value), Is.False);
-				Assert.That(value, Is.Null);
-			}
+				if (success)
+				{
+					Assert.That(assembly.TryGetPublicKeyToken(out var value), Is.True);
+					Assert.That(value, Is.EqualTo(token));
+				}
+				else
+				{
+					Assert.That(assembly.TryGetPublicKeyToken(out var value), Is.False);
+					Assert.That(value, Is.Null);
+				}
+			});
 		}
 
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDE")]
@@ -70,18 +76,21 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", false, null)]
 		public void GetPublicKey(string assemblyName, bool success, byte[] token)
 		{
-			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.Multiple(() =>
+			{
+				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
-			if (success)
-			{
-				Assert.That(assembly.TryGetPublicKey(out var value), Is.True);
-				Assert.That(value, Is.EqualTo(token));
-			}
-			else
-			{
-				Assert.That(assembly.TryGetPublicKey(out var value), Is.False);
-				Assert.That(value, Is.Null);
-			}
+				if (success)
+				{
+					Assert.That(assembly.TryGetPublicKey(out var value), Is.True);
+					Assert.That(value, Is.EqualTo(token));
+				}
+				else
+				{
+					Assert.That(assembly.TryGetPublicKey(out var value), Is.False);
+					Assert.That(value, Is.Null);
+				}
+			});
 		}
 
 		[TestCase("Foo, PublicKey=0123456789ABCDE")]
@@ -101,8 +110,11 @@ namespace TypeNameInterpretation.Test
 		public void GetProcessorArchitecture(string assemblyName, bool success, ProcessorArchitecture processorArchitecture)
 		{
 			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			Assert.That(assembly.TryGetProcessorArchitecture(out var architecture), Is.EqualTo(success));
-			Assert.That(architecture, Is.EqualTo(processorArchitecture));
+			Assert.Multiple(() =>
+			{
+				Assert.That(assembly.TryGetProcessorArchitecture(out var architecture), Is.EqualTo(success));
+				Assert.That(architecture, Is.EqualTo(processorArchitecture));
+			});
 		}
 
 		[TestCase("Bar", ExpectedResult = "A")]

@@ -12,8 +12,11 @@ namespace TypeNameInterpretation.Test
 		public void AssemblyQualificationFactory()
 		{
 			var qualification = Qualification("name", "value");
-			Assert.That(qualification.Name, Is.EqualTo("name"));
-			Assert.That(qualification.Value, Is.EqualTo("value"));
+			Assert.Multiple(() =>
+			{
+				Assert.That(qualification.Name, Is.EqualTo("name"), nameof(qualification.Name));
+				Assert.That(qualification.Value, Is.EqualTo("value"), nameof(qualification.Value));
+			});
 		}
 
 		[Test]
@@ -22,8 +25,11 @@ namespace TypeNameInterpretation.Test
 			var qualification = Qualification("A", "B");
 			var assembly = Assembly("AssemblyName", qualification);
 
-			Assert.That(assembly.Name, Is.EqualTo("AssemblyName"));
-			Assert.That(assembly.Qualifications.Single(), Is.SameAs(qualification));
+			Assert.Multiple(() =>
+			{
+				Assert.That(assembly.Name, Is.EqualTo("AssemblyName"), nameof(assembly.Name));
+				Assert.That(assembly.Qualifications.Single(), Is.SameAs(qualification), nameof(assembly.Qualifications));
+			});
 		}
 
 		[Test]
@@ -33,15 +39,18 @@ namespace TypeNameInterpretation.Test
 			var type1 = NamedType("B");
 			var type2 = NamedType("TypeName", assembly);
 
-			Assert.That(type1.Kind, Is.EqualTo(InsTypeKind.Named));
-			Assert.That(type1.Name, Is.EqualTo("B"));
-			Assert.That(type1.Assembly, Is.Null);
-			Assert.That(type1.DeclaringType, Is.Null);
+			Assert.Multiple(() =>
+			{
+				Assert.That(type1.Kind, Is.EqualTo(InsTypeKind.Named), nameof(type1.Kind) + " 1");
+				Assert.That(type1.Name, Is.EqualTo("B"), nameof(type1.Name) + " 1");
+				Assert.That(type1.Assembly, Is.Null, nameof(type1.Assembly) + " 1");
+				Assert.That(type1.DeclaringType, Is.Null, nameof(type1.DeclaringType) + " 1");
 
-			Assert.That(type2.Kind, Is.EqualTo(InsTypeKind.Named));
-			Assert.That(type2.Name, Is.EqualTo("TypeName"));
-			Assert.That(type2.Assembly, Is.SameAs(assembly));
-			Assert.That(type2.DeclaringType, Is.Null);
+				Assert.That(type2.Kind, Is.EqualTo(InsTypeKind.Named), nameof(type2.Kind) + " 2");
+				Assert.That(type2.Name, Is.EqualTo("TypeName"), nameof(type2.Name) + " 2");
+				Assert.That(type2.Assembly, Is.SameAs(assembly), nameof(type2.Assembly) + " 2");
+				Assert.That(type2.DeclaringType, Is.Null, nameof(type2.DeclaringType) + " 2");
+			});
 		}
 
 		[Test]
@@ -50,9 +59,12 @@ namespace TypeNameInterpretation.Test
 			var elementType = NamedType("A");
 			var type = ArrayType(elementType, 2);
 
-			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Array));
-			Assert.That(type.ElementType, Is.SameAs(elementType));
-			Assert.That(type.Rank, Is.EqualTo(2));
+			Assert.Multiple(() =>
+			{
+				Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Array), nameof(type.Kind));
+				Assert.That(type.ElementType, Is.SameAs(elementType), nameof(type.ElementType));
+				Assert.That(type.Rank, Is.EqualTo(2), nameof(type.Rank));
+			});
 		}
 
 		[Test]
@@ -61,8 +73,11 @@ namespace TypeNameInterpretation.Test
 			var elementType = NamedType("A");
 			var type = PointerType(elementType);
 
-			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Pointer));
-			Assert.That(type.ElementType, Is.SameAs(elementType));
+			Assert.Multiple(() =>
+			{
+				Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Pointer), nameof(type.Kind));
+				Assert.That(type.ElementType, Is.SameAs(elementType), nameof(type.ElementType));
+			});
 		}
 
 		[Test]
@@ -71,8 +86,11 @@ namespace TypeNameInterpretation.Test
 			var elementType = NamedType("A");
 			var type = ByRefType(elementType);
 
-			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.ByRef));
-			Assert.That(type.ElementType, Is.SameAs(elementType));
+			Assert.Multiple(() =>
+			{
+				Assert.That(type.Kind, Is.EqualTo(InsTypeKind.ByRef), nameof(type.Kind));
+				Assert.That(type.ElementType, Is.SameAs(elementType), nameof(type.ElementType));
+			});
 		}
 
 		[Test]
@@ -81,10 +99,13 @@ namespace TypeNameInterpretation.Test
 			var declaringType = NamedType("B");
 			var type = NestedType(declaringType, "TypeName");
 
-			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Named));
-			Assert.That(type.Name, Is.EqualTo("TypeName"));
-			Assert.That(type.Assembly, Is.Null);
-			Assert.That(type.DeclaringType, Is.EqualTo(declaringType));
+			Assert.Multiple(() =>
+			{
+				Assert.That(type.Kind, Is.EqualTo(InsTypeKind.Named), nameof(type.Kind));
+				Assert.That(type.Name, Is.EqualTo("TypeName"), nameof(type.Name));
+				Assert.That(type.Assembly, Is.Null, nameof(type.Assembly));
+				Assert.That(type.DeclaringType, Is.EqualTo(declaringType), nameof(type.DeclaringType));
+			});
 		}
 
 		[Test]
@@ -94,9 +115,12 @@ namespace TypeNameInterpretation.Test
 			var type2 = NamedType("B");
 			var generic = Generic(type1, type2);
 
-			Assert.That(generic.Kind, Is.EqualTo(InsTypeKind.Generic));
-			Assert.That(generic.Definition, Is.EqualTo(type1));
-			Assert.That(generic.TypeArguments.Single(), Is.SameAs(type2));
+			Assert.Multiple(() =>
+			{
+				Assert.That(generic.Kind, Is.EqualTo(InsTypeKind.Generic), nameof(generic.Kind));
+				Assert.That(generic.Definition, Is.EqualTo(type1), nameof(generic.Definition));
+				Assert.That(generic.TypeArguments.Single(), Is.SameAs(type2), nameof(generic.TypeArguments));
+			});
 		}
 
 		[Test]
@@ -105,8 +129,11 @@ namespace TypeNameInterpretation.Test
 			var elementType = NamedType("A");
 			var type = SZArrayType(elementType);
 
-			Assert.That(type.Kind, Is.EqualTo(InsTypeKind.SZArray));
-			Assert.That(type.ElementType, Is.SameAs(elementType));
+			Assert.Multiple(() =>
+			{
+				Assert.That(type.Kind, Is.EqualTo(InsTypeKind.SZArray), nameof(type.Kind));
+				Assert.That(type.ElementType, Is.SameAs(elementType), nameof(type.ElementType));
+			});
 		}
 	}
 }
