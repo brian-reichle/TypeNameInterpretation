@@ -36,13 +36,8 @@ namespace TypeNameInterpretation
 		static void ThrowEOF() => throw new InvalidTypeNameException("Unexpected end of format.");
 		static void ThrowUnexpected(int index) => throw new InvalidTypeNameException("Unexpected char at position " + index + ".");
 
-		readonly ref struct Context
+		readonly ref struct Context(ReadOnlySpan<char> buffer)
 		{
-			public Context(ReadOnlySpan<char> buffer)
-			{
-				_buffer = buffer;
-			}
-
 			public InsType ParseQualified(ref int index)
 			{
 				var assemblyStart = LocateStartOfAssembly(index);
@@ -363,7 +358,7 @@ namespace TypeNameInterpretation
 				return -1;
 			}
 
-			readonly ReadOnlySpan<char> _buffer;
+			readonly ReadOnlySpan<char> _buffer = buffer;
 		}
 	}
 }

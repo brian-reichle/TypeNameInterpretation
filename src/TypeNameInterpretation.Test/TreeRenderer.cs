@@ -26,13 +26,8 @@ namespace TypeNameInterpretation.Test
 		const char Similar = '~';
 		const char Same = ' ';
 
-		readonly struct Context
+		readonly struct Context(StringBuilder builder)
 		{
-			public Context(StringBuilder builder)
-			{
-				_builder = builder;
-			}
-
 			public void DiffType(int indent, InsType? type1, InsType? type2)
 			{
 				if (type1 == type2)
@@ -393,7 +388,7 @@ namespace TypeNameInterpretation.Test
 				_builder.Append(' ', indent * 2);
 			}
 
-			readonly StringBuilder _builder;
+			readonly StringBuilder _builder = builder;
 		}
 	}
 }
