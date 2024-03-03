@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Buffers;
 using System.Collections.Immutable;
 using System.Text;
 
@@ -235,7 +236,11 @@ namespace TypeNameInterpretation
 
 			string ParseIdentifier(ref int index) => ParseIdentifierCore(ref index, Delimiters.All);
 
+#if NET8_0_OR_GREATER
+			string ParseIdentifierCore(ref int index, SearchValues<char> delimiters)
+#else
 			string ParseIdentifierCore(ref int index, ReadOnlySpan<char> delimiters)
+#endif
 			{
 				AssertNotEOF(index);
 
