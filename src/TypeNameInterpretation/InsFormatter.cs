@@ -159,19 +159,25 @@ namespace TypeNameInterpretation
 			{
 				var start = 0;
 
-				for (var i = 0; i < identifier.Length; i++)
+				while (start < identifier.Length)
 				{
-					if (Delimiters.All.IndexOf(identifier[i]) >= 0)
+					var remaining = identifier.AsSpan(start);
+
+					var index = remaining.IndexOfAny(Delimiters.All);
+
+					if (index < 0)
 					{
-						builder
-							.Append(identifier, start, i - start)
-							.Append('\\');
-
-						start = i;
+						builder.Append(remaining);
+						return;
 					}
-				}
 
-				builder.Append(identifier, start, identifier.Length - start);
+					builder
+						.Append(remaining.Slice(0, index))
+						.Append('\\')
+						.Append(remaining[index]);
+
+					start = start + index + 1;
+				}
 			}
 
 			static void WriteQuotedIdentifier(string identifier, StringBuilder builder)
