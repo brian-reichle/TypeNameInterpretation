@@ -26,7 +26,7 @@ namespace TypeNameInterpretation.Test
 		const char Similar = '~';
 		const char Same = ' ';
 
-		struct Context
+		readonly struct Context
 		{
 			public Context(StringBuilder builder)
 			{
