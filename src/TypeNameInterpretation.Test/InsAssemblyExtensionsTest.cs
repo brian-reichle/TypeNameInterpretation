@@ -10,7 +10,7 @@ namespace TypeNameInterpretation.Test
 	{
 		[TestCase("Foo, Version=4.2.0.0", "4.2.0.0")]
 		[TestCase("Foo", null)]
-		public void GetVersion(string assemblyName, string expectedVersion)
+		public void GetVersion(string assemblyName, string? expectedVersion)
 		{
 			Assert.Multiple(() =>
 			{
@@ -42,7 +42,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", true, new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF })]
 		[TestCase("Foo, PublicKeyToken=null", true, null)]
 		[TestCase("Foo", false, null)]
-		public void GetPublicKeyToken(string assemblyName, bool success, byte[] token)
+		public void GetPublicKeyToken(string assemblyName, bool success, byte[]? token)
 		{
 			Assert.Multiple(() =>
 			{
@@ -74,7 +74,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo, PublicKey=0123456789ABCDEF", true, new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF })]
 		[TestCase("Foo, PublicKey=null", true, null)]
 		[TestCase("Foo", false, null)]
-		public void GetPublicKey(string assemblyName, bool success, byte[] token)
+		public void GetPublicKey(string assemblyName, bool success, byte[]? token)
 		{
 			Assert.Multiple(() =>
 			{
@@ -146,7 +146,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKeyToken=0123456789ABCDEF")]
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", new byte[] { 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67 }, ExpectedResult = "Foo, PublicKeyToken=89ABCDEF01234567")]
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDEF", null, ExpectedResult = "Foo, PublicKeyToken=null")]
-		public string WithPublicKeyToken(string assemblyName, byte[] publicKey)
+		public string WithPublicKeyToken(string assemblyName, byte[]? publicKey)
 		{
 			return InsFormatter.Format(
 				InsTypeFactory.ParseAssemblyName(assemblyName)
@@ -157,7 +157,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo, PublicKey=0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }, ExpectedResult = "Foo, PublicKey=0123456789ABCDEF")]
 		[TestCase("Foo, PublicKey=0123456789ABCDEF", new byte[] { 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67 }, ExpectedResult = "Foo, PublicKey=89ABCDEF01234567")]
 		[TestCase("Foo, PublicKey=0123456789ABCDEF", null, ExpectedResult = "Foo, PublicKey=null")]
-		public string WithPublicKey(string assemblyName, byte[] publicKey)
+		public string WithPublicKey(string assemblyName, byte[]? publicKey)
 		{
 			return InsFormatter.Format(
 				InsTypeFactory.ParseAssemblyName(assemblyName)
