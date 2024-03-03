@@ -93,7 +93,7 @@ namespace TypeNameInterpretation
 		public static InsAssembly WithPublicKey(this InsAssembly assembly, ReadOnlySpan<byte> publicKey)
 			=> assembly.WithQualification(WellKnownQualificationNames.PublicKey, FormatBlob(publicKey));
 
-		public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[] publicKey)
+		public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[]? publicKey)
 		{
 			if (publicKey == null)
 			{
@@ -108,7 +108,7 @@ namespace TypeNameInterpretation
 		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, ReadOnlySpan<byte> publicKeyToken)
 			=> assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, FormatBlob(publicKeyToken));
 
-		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[] publicKeyToken)
+		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[]? publicKeyToken)
 		{
 			if (publicKeyToken == null)
 			{

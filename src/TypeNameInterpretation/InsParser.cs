@@ -36,7 +36,7 @@ namespace TypeNameInterpretation
 		static void ThrowEOF() => throw new InvalidTypeNameException("Unexpected end of format.");
 		static void ThrowUnexpected(int index) => throw new InvalidTypeNameException("Unexpected char at position " + index + ".");
 
-		ref struct Context
+		readonly ref struct Context
 		{
 			public Context(ReadOnlySpan<char> buffer)
 			{
