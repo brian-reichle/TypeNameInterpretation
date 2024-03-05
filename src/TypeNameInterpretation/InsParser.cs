@@ -79,9 +79,7 @@ namespace TypeNameInterpretation
 
 				if (index + 1 < _buffer.Length &&
 					_buffer[index] == '[' &&
-					_buffer[index + 1] != ']' &&
-					_buffer[index + 1] != ',' &&
-					_buffer[index + 1] != '*')
+					_buffer[index + 1] is not ']' and not ',' and not '*')
 				{
 					var typeArguments = ParseTypeArguments(ref index);
 					type = new InsGenericType(baseType, typeArguments);
