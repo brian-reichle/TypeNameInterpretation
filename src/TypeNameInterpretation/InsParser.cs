@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Buffers;
 using System.Collections.Immutable;
 using System.Text;
 
@@ -36,13 +37,8 @@ namespace TypeNameInterpretation
 		static void ThrowEOF() => throw new InvalidTypeNameException("Unexpected end of format.");
 		static void ThrowUnexpected(int index) => throw new InvalidTypeNameException("Unexpected char at position " + index + ".");
 
-		readonly ref struct Context
+		readonly ref struct Context(ReadOnlySpan<char> buffer)
 		{
-			public Context(ReadOnlySpan<char> buffer)
-			{
-				_buffer = buffer;
-			}
-
 			public InsType ParseQualified(ref int index)
 			{
 				var assemblyStart = LocateStartOfAssembly(index);
@@ -240,7 +236,11 @@ namespace TypeNameInterpretation
 
 			string ParseIdentifier(ref int index) => ParseIdentifierCore(ref index, Delimiters.All);
 
+#if NET8_0_OR_GREATER
+			string ParseIdentifierCore(ref int index, SearchValues<char> delimiters)
+#else
 			string ParseIdentifierCore(ref int index, ReadOnlySpan<char> delimiters)
+#endif
 			{
 				AssertNotEOF(index);
 
@@ -363,7 +363,7 @@ namespace TypeNameInterpretation
 				return -1;
 			}
 
-			readonly ReadOnlySpan<char> _buffer;
+			readonly ReadOnlySpan<char> _buffer = buffer;
 		}
 	}
 }
