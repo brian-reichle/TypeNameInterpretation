@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Buffers;
 using System.Text;
 
 namespace TypeNameInterpretation
@@ -157,13 +158,29 @@ namespace TypeNameInterpretation
 
 			static void WriteIdentifier(string identifier, StringBuilder builder)
 			{
+				WriteWithEscapedDelimiters(builder, identifier, Delimiters.All);
+			}
+
+			static void WriteQuotedIdentifier(string identifier, StringBuilder builder)
+			{
+				builder.Append('"');
+				WriteWithEscapedDelimiters(builder, identifier, Delimiters.Quote);
+				builder.Append('"');
+			}
+
+#if NET8_0_OR_GREATER
+			static void WriteWithEscapedDelimiters(StringBuilder builder, string identifier, SearchValues<char> delimiters)
+#else
+			static void WriteWithEscapedDelimiters(StringBuilder builder, string identifier, ReadOnlySpan<char> delimiters)
+#endif
+			{
 				var start = 0;
 
 				while (start < identifier.Length)
 				{
 					var remaining = identifier.AsSpan(start);
 
-					var index = remaining.IndexOfAny(Delimiters.All);
+					var index = remaining.IndexOfAny(delimiters);
 
 					if (index < 0)
 					{
@@ -178,27 +195,6 @@ namespace TypeNameInterpretation
 
 					start = start + index + 1;
 				}
-			}
-
-			static void WriteQuotedIdentifier(string identifier, StringBuilder builder)
-			{
-				builder.Append('"');
-				var start = 0;
-
-				for (var i = 0; i < identifier.Length; i++)
-				{
-					var c = identifier[i];
-
-					if (c == '\\' || c == '"')
-					{
-						builder.Append(identifier, start, i - start);
-						builder.Append('\\');
-						start = i;
-					}
-				}
-
-				builder.Append(identifier, start, identifier.Length - start);
-				builder.Append('"');
 			}
 
 			static bool RequiresQuoting(string identifier)
