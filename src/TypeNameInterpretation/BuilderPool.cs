@@ -1,25 +1,32 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
+using System;
 using System.Text;
-using System.Threading;
 
 namespace TypeNameInterpretation
 {
 	static class BuilderPool
 	{
 		public static StringBuilder Rent()
-			=> Interlocked.Exchange(ref _cache, null) ?? new StringBuilder();
+		{
+			var result = _cache ?? new StringBuilder();
+			_cache = null;
+			return result;
+		}
 
 		public static StringBuilder Rent(int capacity)
 		{
-			var result = Interlocked.Exchange(ref _cache, null);
+			var result = _cache;
+			_cache = null;
 
 			if (result == null)
 			{
 				return new StringBuilder(capacity);
 			}
-
-			result.EnsureCapacity(capacity);
-			return result;
+			else
+			{
+				result.EnsureCapacity(capacity);
+				return result;
+			}
 		}
 
 		public static void Return(StringBuilder builder)
@@ -29,19 +36,12 @@ namespace TypeNameInterpretation
 				return;
 			}
 
-			builder.Length = 0;
 			var existing = _cache;
 
-			while (existing == null || existing.Capacity < builder.Capacity)
+			if (existing == null || existing.Capacity < builder.Capacity)
 			{
-				var tmp = Interlocked.CompareExchange(ref _cache, builder, existing);
-
-				if (tmp == existing)
-				{
-					return;
-				}
-
-				existing = tmp;
+				builder.Length = 0;
+				_cache = builder;
 			}
 		}
 
@@ -52,6 +52,7 @@ namespace TypeNameInterpretation
 			return result;
 		}
 
+		[ThreadStatic]
 		static StringBuilder? _cache;
 	}
 }
