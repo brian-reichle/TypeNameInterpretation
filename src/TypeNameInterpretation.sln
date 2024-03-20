@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Test", "TypeNameInterpretation.Test\TypeNameInterpretation.Test.csproj", "{8D526B4F-0F2B-40DA-A39C-CFEB504B72EF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Benchmark", "TypeNameInterpretation.Benchmark\TypeNameInterpretation.Benchmark.csproj", "{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{8D526B4F-0F2B-40DA-A39C-CFEB504B72EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D526B4F-0F2B-40DA-A39C-CFEB504B72EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D526B4F-0F2B-40DA-A39C-CFEB504B72EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
