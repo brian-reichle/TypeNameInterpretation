@@ -41,7 +41,7 @@ jobs:
       run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=${{ github.sha }} -p:RepositoryBranch=${{ github.ref }}
     - name: Save Artifacts
       if: matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: package
         path: |
