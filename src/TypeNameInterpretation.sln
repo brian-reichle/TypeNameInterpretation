@@ -1,13 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32014.148
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation", "TypeNameInterpretation\TypeNameInterpretation.csproj", "{45DFEA59-07B3-46FB-955B-B80F57E644C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Test", "TypeNameInterpretation.Test\TypeNameInterpretation.Test.csproj", "{8D526B4F-0F2B-40DA-A39C-CFEB504B72EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Benchmark", "TypeNameInterpretation.Benchmark\TypeNameInterpretation.Benchmark.csproj", "{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{A3D14199-70F1-4D2B-849A-4813CEB1FC89}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.github\workflows\build.yaml = ..\.github\workflows\build.yaml
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\Directory.Packages.props = ..\Directory.Packages.props
+		..\global.json = ..\global.json
+		..\stylecop.json = ..\stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

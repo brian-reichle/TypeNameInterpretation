@@ -234,7 +234,7 @@ namespace TypeNameInterpretation
 
 			string ParseIdentifier(ref int index) => ParseIdentifierCore(ref index, Delimiters.All);
 
-#if NET8_0_OR_GREATER
+#if NET
 			string ParseIdentifierCore(ref int index, SearchValues<char> delimiters)
 #else
 			string ParseIdentifierCore(ref int index, ReadOnlySpan<char> delimiters)

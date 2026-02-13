@@ -30,11 +30,11 @@ namespace TypeNameInterpretation.Test
 		public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
 		{
 			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				Assert.That(assembly.Name, Is.EqualTo("Foo"), nameof(assembly.Name));
 				Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications), nameof(assembly.Qualifications));
-			});
+			}
 		}
 
 		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]

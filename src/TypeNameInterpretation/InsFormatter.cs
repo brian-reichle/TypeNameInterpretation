@@ -168,7 +168,7 @@ namespace TypeNameInterpretation
 				builder.Append('"');
 			}
 
-#if NET8_0_OR_GREATER
+#if NET
 			static void WriteWithEscapedDelimiters(StringBuilder builder, string identifier, SearchValues<char> delimiters)
 #else
 			static void WriteWithEscapedDelimiters(StringBuilder builder, string identifier, ReadOnlySpan<char> delimiters)
