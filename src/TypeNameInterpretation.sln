@@ -9,6 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeNameInterpretation.Benchmark", "TypeNameInterpretation.Benchmark\TypeNameInterpretation.Benchmark.csproj", "{4F23DBF5-BB1D-4899-AE6D-1F0C587A4EE2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{A3D14199-70F1-4D2B-849A-4813CEB1FC89}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.github\workflows\build.yaml = ..\.github\workflows\build.yaml
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\global.json = ..\global.json
+		..\stylecop.json = ..\stylecop.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
