@@ -12,7 +12,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", null)]
 		public void GetVersion(string assemblyName, string? expectedVersion)
 		{
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
@@ -26,7 +26,7 @@ namespace TypeNameInterpretation.Test
 					Assert.That(assembly.TryGetVersion(out var version), Is.True);
 					Assert.That(version, Is.EqualTo(Version.Parse(expectedVersion)));
 				}
-			});
+			}
 		}
 
 		[TestCase("Foo, Version=invalid")]
@@ -44,7 +44,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", false, null)]
 		public void GetPublicKeyToken(string assemblyName, bool success, byte[]? token)
 		{
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
@@ -58,7 +58,7 @@ namespace TypeNameInterpretation.Test
 					Assert.That(assembly.TryGetPublicKeyToken(out var value), Is.False);
 					Assert.That(value, Is.Null);
 				}
-			});
+			}
 		}
 
 		[TestCase("Foo, PublicKeyToken=0123456789ABCDE")]
@@ -76,7 +76,7 @@ namespace TypeNameInterpretation.Test
 		[TestCase("Foo", false, null)]
 		public void GetPublicKey(string assemblyName, bool success, byte[]? token)
 		{
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
 
@@ -90,7 +90,7 @@ namespace TypeNameInterpretation.Test
 					Assert.That(assembly.TryGetPublicKey(out var value), Is.False);
 					Assert.That(value, Is.Null);
 				}
-			});
+			}
 		}
 
 		[TestCase("Foo, PublicKey=0123456789ABCDE")]
@@ -110,11 +110,11 @@ namespace TypeNameInterpretation.Test
 		public void GetProcessorArchitecture(string assemblyName, bool success, ProcessorArchitecture processorArchitecture)
 		{
 			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				Assert.That(assembly.TryGetProcessorArchitecture(out var architecture), Is.EqualTo(success));
 				Assert.That(architecture, Is.EqualTo(processorArchitecture));
-			});
+			}
 		}
 
 		[TestCase("Bar", ExpectedResult = "A")]
