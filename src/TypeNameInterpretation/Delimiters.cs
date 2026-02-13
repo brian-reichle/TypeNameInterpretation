@@ -6,7 +6,7 @@ namespace TypeNameInterpretation
 {
 	static class Delimiters
 	{
-#if NET8_0_OR_GREATER
+#if NET
 		public static SearchValues<char> All { get; } = SearchValues.Create(_allDelimiterChars);
 		public static SearchValues<char> Quote { get; } = SearchValues.Create(_allDelimiterChars.AsSpan(0, 2));
 #else
