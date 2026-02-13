@@ -192,6 +192,13 @@ namespace TypeNameInterpretation
 
 			var result = new byte[value.Length >> 1];
 
+#if NET9_0_OR_GREATER
+			if (Convert.FromHexString(value, result, out _, out _) != System.Buffers.OperationStatus.Done)
+			{
+				blob = null;
+				return false;
+			}
+#else
 			for (var i = 0; i < result.Length; i++)
 			{
 				var baseIndex = i << 1;
@@ -213,6 +220,7 @@ namespace TypeNameInterpretation
 
 				result[i] = (byte)((n1 << 4) | n2);
 			}
+#endif
 
 			blob = result;
 			return true;
@@ -220,6 +228,9 @@ namespace TypeNameInterpretation
 
 		static string FormatBlob(ReadOnlySpan<byte> blob)
 		{
+#if NET
+			return Convert.ToHexString(blob);
+#else
 			if (blob.Length == 0)
 			{
 				return string.Empty;
@@ -238,8 +249,10 @@ namespace TypeNameInterpretation
 			}
 
 			return builder.ToStringAndReturn();
+#endif
 		}
 
+#if !NET9_0_OR_GREATER
 		static int CharValue(char c)
 		{
 			if (c >= '0' && c <= '9')
@@ -259,6 +272,7 @@ namespace TypeNameInterpretation
 				return -1;
 			}
 		}
+#endif
 
 		const string NullBlob = "null";
 	}
