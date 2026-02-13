@@ -98,6 +98,9 @@ csharp_new_line_between_query_expression_clauses = true
 
 dotnet_diagnostic.CA1510.severity = none
 
+# CA1720 tries to take ownership of identifier names that it shouldn't.
+dotnet_diagnostic.CA1720.severity = none
+
 # This is a nonsense requirement.
 dotnet_diagnostic.IDE0130.severity = none
 
