@@ -8,7 +8,8 @@ namespace TypeNameInterpretation
 	{
 		internal InsGenericType(InsNamedType definition, ImmutableArray<InsType> typeArguments)
 		{
-			Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+			ArgumentNullException.ThrowIfNull(definition);
+			Definition = definition;
 			TypeArguments = typeArguments;
 		}
 
@@ -18,11 +19,7 @@ namespace TypeNameInterpretation
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
 		{
-			if (visitor == null)
-			{
-				throw new ArgumentNullException(nameof(visitor));
-			}
-
+			ArgumentNullException.ThrowIfNull(visitor);
 			return visitor.VisitGeneric(this, argument);
 		}
 	}

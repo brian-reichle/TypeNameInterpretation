@@ -9,7 +9,8 @@ namespace TypeNameInterpretation
 			string name,
 			InsAssembly? assembly)
 		{
-			Name = name ?? throw new ArgumentNullException(nameof(name));
+			ArgumentNullException.ThrowIfNull(name);
+			Name = name;
 			Assembly = assembly;
 		}
 
@@ -17,8 +18,10 @@ namespace TypeNameInterpretation
 			string name,
 			InsNamedType? declaringType)
 		{
-			Name = name ?? throw new ArgumentNullException(nameof(name));
-			DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+			ArgumentNullException.ThrowIfNull(name);
+			ArgumentNullException.ThrowIfNull(declaringType);
+			Name = name;
+			DeclaringType = declaringType;
 		}
 
 		public string Name { get; }
@@ -28,11 +31,7 @@ namespace TypeNameInterpretation
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
 		{
-			if (visitor == null)
-			{
-				throw new ArgumentNullException(nameof(visitor));
-			}
-
+			ArgumentNullException.ThrowIfNull(visitor);
 			return visitor.VisitNamed(this, argument);
 		}
 	}

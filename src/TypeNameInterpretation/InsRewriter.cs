@@ -8,11 +8,7 @@ namespace TypeNameInterpretation
 	{
 		public virtual InsType VisitArray(InsArrayType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			var elementType = type.ElementType.Apply(this, argument);
 
 			if (elementType == type.ElementType)
@@ -25,11 +21,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsType VisitByRef(InsByRefType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			var inner = type.ElementType.Apply(this, argument);
 
 			if (inner == type.ElementType)
@@ -42,11 +34,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsType VisitGeneric(InsGenericType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			var definition = (InsNamedType)type.Definition.Apply(this, argument);
 			var typeArguments = VisitTypes(type.TypeArguments, argument);
 
@@ -60,11 +48,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsType VisitNamed(InsNamedType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			if (type.DeclaringType != null)
 			{
 				var declaringType = (InsNamedType)type.DeclaringType.Apply(this, argument);
@@ -91,11 +75,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsType VisitPointer(InsPointerType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			var inner = type.ElementType.Apply(this, argument);
 
 			if (inner == type.ElementType)
@@ -108,11 +88,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsType VisitSZArray(InsSZArrayType type, TArgument argument)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(type);
 			var elementType = type.ElementType.Apply(this, argument);
 
 			if (elementType == type.ElementType)
@@ -149,11 +125,7 @@ namespace TypeNameInterpretation
 
 		public virtual InsAssembly VisitAssembly(InsAssembly assembly, TArgument argument)
 		{
-			if (assembly == null)
-			{
-				throw new ArgumentNullException(nameof(assembly));
-			}
-
+			ArgumentNullException.ThrowIfNull(assembly);
 			var qualifications = VisitAssemblyQualifications(assembly.Qualifications, argument);
 
 			if (qualifications == assembly.Qualifications)

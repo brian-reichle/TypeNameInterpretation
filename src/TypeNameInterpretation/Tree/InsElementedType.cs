@@ -7,7 +7,8 @@ namespace TypeNameInterpretation
 	{
 		private protected InsElementedType(InsType elementType)
 		{
-			ElementType = elementType ?? throw new ArgumentNullException(nameof(elementType));
+			ArgumentNullException.ThrowIfNull(elementType);
+			ElementType = elementType;
 		}
 
 		public InsType ElementType { get; }
