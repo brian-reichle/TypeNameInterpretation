@@ -8,6 +8,7 @@ static class Delimiters
 {
 #if NET
 	public static SearchValues<char> All { get; } = SearchValues.Create(_allDelimiterChars);
+	public static SearchValues<char> AssemblySearch { get; } = SearchValues.Create(_allDelimiterChars.AsSpan(0, 5));
 	public static SearchValues<char> Quote { get; } = SearchValues.Create(_allDelimiterChars.AsSpan(0, 2));
 #else
 	public static ReadOnlySpan<char> All => _allDelimiterChars.AsSpan();

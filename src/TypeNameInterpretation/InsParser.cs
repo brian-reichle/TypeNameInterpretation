@@ -323,6 +323,19 @@ static class InsParser
 
 			while (index < _buffer.Length)
 			{
+#if NET
+				// Fast forward to the next meaningful char.
+				// This generally improves the performance in .NET Core but slows down .Net Framework.
+				var i = _buffer.Slice(index).IndexOfAny(Delimiters.AssemblySearch);
+
+				if (i < 0)
+				{
+					return -1;
+				}
+
+				index += i;
+#endif
+
 				var c = _buffer[index];
 
 				if (c == '\\')
