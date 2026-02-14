@@ -2,91 +2,91 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace TypeNameInterpretation.Test
+namespace TypeNameInterpretation.Test;
+
+[TestFixture]
+class InsParserTest
 {
-	[TestFixture]
-	class InsParserTest
+	[TestCase("Foo.Bar", ExpectedResult = "Foo.Bar")]
+	[TestCase("\\[Foo.Bar\\]", ExpectedResult = "[Foo.Bar]")]
+	[TestCase("Foo\\\\Bar", ExpectedResult = "Foo\\Bar")]
+	public string Assembly_UnqualifiedName(string assemblyName)
 	{
-		[TestCase("Foo.Bar", ExpectedResult = "Foo.Bar")]
-		[TestCase("\\[Foo.Bar\\]", ExpectedResult = "[Foo.Bar]")]
-		[TestCase("Foo\\\\Bar", ExpectedResult = "Foo\\Bar")]
-		public string Assembly_UnqualifiedName(string assemblyName)
-		{
-			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			Assert.That(assembly.Qualifications, Is.Empty);
+		var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+		Assert.That(assembly.Qualifications, Is.Empty);
 
-			return assembly.Name;
+		return assembly.Name;
+	}
+
+	[TestCase("Foo, Culture=\"\"", "Culture|")]
+	[TestCase("Foo, Culture=neutral", "Culture|neutral")]
+	[TestCase("Foo, Bar=Baz, Culture=neutral", "Bar|Baz", "Culture|neutral")]
+	[TestCase("Foo, Bar=Baz", "Bar|Baz")]
+	[TestCase("Foo, \"Bar\"=\"Baz\"", "Bar|Baz")]
+	[TestCase("Foo, Bar=Baz\\,", "Bar|Baz,")]
+	[TestCase("Foo, Bar=\"Baz,\"", "Bar|Baz,")]
+	[TestCase("Foo, Bar=Ba\\\"z", "Bar|Ba\"z")]
+	[TestCase("Foo, Bar=\"Ba\\\"z\"", "Bar|Ba\"z")]
+	public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
+	{
+		var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+		using (Assert.EnterMultipleScope())
+		{
+			Assert.That(assembly.Name, Is.EqualTo("Foo"), nameof(assembly.Name));
+			Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications), nameof(assembly.Qualifications));
 		}
+	}
 
-		[TestCase("Foo, Culture=\"\"", "Culture|")]
-		[TestCase("Foo, Culture=neutral", "Culture|neutral")]
-		[TestCase("Foo, Bar=Baz, Culture=neutral", "Bar|Baz", "Culture|neutral")]
-		[TestCase("Foo, Bar=Baz", "Bar|Baz")]
-		[TestCase("Foo, \"Bar\"=\"Baz\"", "Bar|Baz")]
-		[TestCase("Foo, Bar=Baz\\,", "Bar|Baz,")]
-		[TestCase("Foo, Bar=\"Baz,\"", "Bar|Baz,")]
-		[TestCase("Foo, Bar=Ba\\\"z", "Bar|Ba\"z")]
-		[TestCase("Foo, Bar=\"Ba\\\"z\"", "Bar|Ba\"z")]
-		public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
+	[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
+	[TestCase("Foo, Bar,", ExpectedResult = "Unexpected char at position 8.")]
+	[TestCase("Foo, Bar", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo, Bar=", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo, Bar==", ExpectedResult = "Unexpected char at position 9.")]
+	[TestCase("Foo, Bar=\"Baz", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo, \\", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo, \"\\", ExpectedResult = "Unexpected end of format.")]
+	public string? Assembly_Invalid(string assemblyName)
+	{
+		try
 		{
-			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
-			using (Assert.EnterMultipleScope())
-			{
-				Assert.That(assembly.Name, Is.EqualTo("Foo"), nameof(assembly.Name));
-				Assert.That(assembly.Qualifications.Select(x => x.Name + "|" + x.Value), Is.EqualTo(qualifications), nameof(assembly.Qualifications));
-			}
+			InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.Fail("Expected to throw an InvalidTypeNameException.");
+			return null;
 		}
-
-		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
-		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected char at position 8.")]
-		[TestCase("Foo, Bar", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo, Bar=", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo, Bar==", ExpectedResult = "Unexpected char at position 9.")]
-		[TestCase("Foo, Bar=\"Baz", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo, \\", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo, \"\\", ExpectedResult = "Unexpected end of format.")]
-		public string? Assembly_Invalid(string assemblyName)
+		catch (InvalidTypeNameException ex)
 		{
-			try
-			{
-				InsTypeFactory.ParseAssemblyName(assemblyName);
-				Assert.Fail("Expected to throw an InvalidTypeNameException.");
-				return null;
-			}
-			catch (InvalidTypeNameException ex)
-			{
-				return ex.Message;
-			}
+			return ex.Message;
 		}
+	}
 
-		[Test]
-		public void Type_Unqualified()
-		{
-			var expected =
+	[Test]
+	public void Type_Unqualified()
+	{
+		var expected =
 @"NamedType:
   ""Foo.Bar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Qualified()
-		{
-			var expected =
+	[Test]
+	public void Type_Qualified()
+	{
+		var expected =
 @"NamedType:
   ""Foo.Bar.Baz""
   Assembly:
     ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_FullyQualified()
-		{
-			var expected =
+	[Test]
+	public void Type_FullyQualified()
+	{
+		var expected =
 @"NamedType:
   ""Foo.Bar.Baz""
   Assembly:
@@ -99,13 +99,13 @@ namespace TypeNameInterpretation.Test
       ""3.14""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar, Culture=neutral, Version=3.14")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar.Baz, FooBar, Culture=neutral, Version=3.14")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Nested()
-		{
-			var expected =
+	[Test]
+	public void Type_Nested()
+	{
+		var expected =
 @"NamedType:
   ""Baz""
   NamedType:
@@ -114,13 +114,13 @@ namespace TypeNameInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar+Baz, FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar+Baz, FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_GenericWithUnquolifiedArg1()
-		{
-			var expected =
+	[Test]
+	public void Type_GenericWithUnquolifiedArg1()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Foo.Bar`1""
@@ -130,13 +130,13 @@ namespace TypeNameInterpretation.Test
     ""Baz""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_GenericWithUnquolifiedArg2()
-		{
-			var expected =
+	[Test]
+	public void Type_GenericWithUnquolifiedArg2()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Foo.Bar`2""
@@ -148,13 +148,13 @@ namespace TypeNameInterpretation.Test
     ""Quux""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`2[Baz,Quux], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`2[Baz,Quux], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_GenericWithUnquolifiedArg3()
-		{
-			var expected =
+	[Test]
+	public void Type_GenericWithUnquolifiedArg3()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Foo.Bar`3""
@@ -168,13 +168,13 @@ namespace TypeNameInterpretation.Test
     ""Barry""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`3[Baz,Quux,Barry], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`3[Baz,Quux,Barry], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_GenericWithQuolifiedArg()
-		{
-			var expected =
+	[Test]
+	public void Type_GenericWithQuolifiedArg()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Foo.Bar`1""
@@ -186,13 +186,13 @@ namespace TypeNameInterpretation.Test
       ""FooBaz""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[[Baz, FooBaz]], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[[Baz, FooBaz]], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_GenericOfArray()
-		{
-			var expected =
+	[Test]
+	public void Type_GenericOfArray()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Foo.Bar`1""
@@ -203,13 +203,13 @@ namespace TypeNameInterpretation.Test
       ""Baz""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz[]], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_ArrayOfGeneric()
-		{
-			var expected =
+	[Test]
+	public void Type_ArrayOfGeneric()
+	{
+		var expected =
 @"SZArrayType:
   Generic:
     NamedType:
@@ -220,13 +220,13 @@ namespace TypeNameInterpretation.Test
       ""Baz""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar`1[Baz][], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_SZArray()
-		{
-			var expected =
+	[Test]
+	public void Type_SZArray()
+	{
+		var expected =
 @"SZArrayType:
   NamedType:
     ""Foo.Bar""
@@ -234,13 +234,13 @@ namespace TypeNameInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Array1()
-		{
-			var expected =
+	[Test]
+	public void Type_Array1()
+	{
+		var expected =
 @"ArrayType:
   NamedType:
     ""Foo.Bar""
@@ -249,13 +249,13 @@ namespace TypeNameInterpretation.Test
   1
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[*], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[*], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Array2()
-		{
-			var expected =
+	[Test]
+	public void Type_Array2()
+	{
+		var expected =
 @"ArrayType:
   NamedType:
     ""Foo.Bar""
@@ -264,13 +264,13 @@ namespace TypeNameInterpretation.Test
   2
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Array2_1()
-		{
-			var expected =
+	[Test]
+	public void Type_Array2_1()
+	{
+		var expected =
 @"ArrayType:
   ArrayType:
     NamedType:
@@ -281,13 +281,13 @@ namespace TypeNameInterpretation.Test
   1
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][*], FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar[,][*], FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_Pointer()
-		{
-			var expected =
+	[Test]
+	public void Type_Pointer()
+	{
+		var expected =
 @"Pointer:
   NamedType:
     ""Foo.Bar""
@@ -295,13 +295,13 @@ namespace TypeNameInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar*, FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar*, FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_PointerPointer()
-		{
-			var expected =
+	[Test]
+	public void Type_PointerPointer()
+	{
+		var expected =
 @"Pointer:
   Pointer:
     NamedType:
@@ -310,13 +310,13 @@ namespace TypeNameInterpretation.Test
         ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar**, FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar**, FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_ByRef()
-		{
-			var expected =
+	[Test]
+	public void Type_ByRef()
+	{
+		var expected =
 @"ByRef:
   NamedType:
     ""Foo.Bar""
@@ -324,13 +324,13 @@ namespace TypeNameInterpretation.Test
       ""FooBar""
 ";
 
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar&, FooBar")), Is.EqualTo(expected));
-		}
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Foo.Bar&, FooBar")), Is.EqualTo(expected));
+	}
 
-		[Test]
-		public void Type_ComplexAssemblyLocation()
-		{
-			var expected =
+	[Test]
+	public void Type_ComplexAssemblyLocation()
+	{
+		var expected =
 @"Generic:
   NamedType:
     ""Baz""
@@ -353,27 +353,26 @@ namespace TypeNameInterpretation.Test
     2
 ";
 
-			// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
-			Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
-		}
+		// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
+		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
+	}
 
-		[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
-		[TestCase("Foo[*][A]", ExpectedResult = "Unexpected char at position 7.")]
-		[TestCase("Foo&[]", ExpectedResult = "Unexpected char at position 4.")]
-		[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
-		[TestCase("Foo[", ExpectedResult = "Unexpected end of format.")]
-		public string? Type_Invalid(string typeName)
+	[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
+	[TestCase("Foo[*][A]", ExpectedResult = "Unexpected char at position 7.")]
+	[TestCase("Foo&[]", ExpectedResult = "Unexpected char at position 4.")]
+	[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo[", ExpectedResult = "Unexpected end of format.")]
+	public string? Type_Invalid(string typeName)
+	{
+		try
 		{
-			try
-			{
-				InsTypeFactory.ParseTypeName(typeName);
-				Assert.Fail("Expected to throw an InvalidTypeNameException.");
-				return null;
-			}
-			catch (InvalidTypeNameException ex)
-			{
-				return ex.Message;
-			}
+			InsTypeFactory.ParseTypeName(typeName);
+			Assert.Fail("Expected to throw an InvalidTypeNameException.");
+			return null;
+		}
+		catch (InvalidTypeNameException ex)
+		{
+			return ex.Message;
 		}
 	}
 }

@@ -3,25 +3,25 @@ using System;
 using NUnit.Framework;
 using static TypeNameInterpretation.InsTypeFactory;
 
-namespace TypeNameInterpretation.Test
+namespace TypeNameInterpretation.Test;
+
+[TestFixture]
+class InsRewriterTest
 {
-	[TestFixture]
-	class InsRewriterTest
+	[Test]
+	public void Unchanged()
 	{
-		[Test]
-		public void Unchanged()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => x);
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => x);
 
-			Assert.That(result, Is.SameAs(_allTheTypes));
-		}
+		Assert.That(result, Is.SameAs(_allTheTypes));
+	}
 
-		[Test]
-		public void RewriteAssemblyName()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Foo", "Bar"));
+	[Test]
+	public void RewriteAssemblyName()
+	{
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Foo", "Bar"));
 
-			const string ExpectedDiffs =
+		const string ExpectedDiffs =
 @"~ByRef:
 ~  Pointer:
 ~    SZArrayType:
@@ -42,15 +42,15 @@ namespace TypeNameInterpretation.Test
          1
 ";
 
-			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
-		}
+		Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+	}
 
-		[Test]
-		public void RewriteTypeName()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TypeName", "AnotherName"));
+	[Test]
+	public void RewriteTypeName()
+	{
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TypeName", "AnotherName"));
 
-			const string ExpectedDiffs =
+		const string ExpectedDiffs =
 @"~ByRef:
 ~  Pointer:
 ~    SZArrayType:
@@ -71,15 +71,15 @@ namespace TypeNameInterpretation.Test
          1
 ";
 
-			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
-		}
+		Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+	}
 
-		[Test]
-		public void RewriteQualification()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Culture", "AnotherCulture"));
+	[Test]
+	public void RewriteQualification()
+	{
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Culture", "AnotherCulture"));
 
-			const string ExpectedDiffs =
+		const string ExpectedDiffs =
 @"~ByRef:
 ~  Pointer:
 ~    SZArrayType:
@@ -100,15 +100,15 @@ namespace TypeNameInterpretation.Test
          1
 ";
 
-			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
-		}
+		Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+	}
 
-		[Test]
-		public void RewriteTypeArg()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TArg", "TArgument"));
+	[Test]
+	public void RewriteTypeArg()
+	{
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "TArg", "TArgument"));
 
-			const string ExpectedDiffs =
+		const string ExpectedDiffs =
 @"~ByRef:
 ~  Pointer:
 ~    SZArrayType:
@@ -129,15 +129,15 @@ namespace TypeNameInterpretation.Test
          1
 ";
 
-			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
-		}
+		Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+	}
 
-		[Test]
-		public void RewriteNested()
-		{
-			var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Nested", "AnotherNested"));
+	[Test]
+	public void RewriteNested()
+	{
+		var result = _allTheTypes.Apply(DummyRewriter.Instance, x => Replace(x, "Nested", "AnotherNested"));
 
-			const string ExpectedDiffs =
+		const string ExpectedDiffs =
 @"~ByRef:
 ~  Pointer:
 ~    SZArrayType:
@@ -158,80 +158,79 @@ namespace TypeNameInterpretation.Test
          1
 ";
 
-			Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+		Assert.That(TreeRenderer.Diff(_allTheTypes, result), Is.EqualTo(ExpectedDiffs));
+	}
+
+	static string Replace(string text, string oldValue, string newValue) => text == oldValue ? newValue : text;
+
+	readonly InsType _allTheTypes =
+		ByRefType(
+			PointerType(
+				SZArrayType(
+					ArrayType(
+						Generic(
+							NestedType(
+								NamedType(
+									"TypeName",
+									Assembly(
+										"Foo",
+										Qualification("Culture", "neutral"))),
+								"Nested"),
+							NamedType("TArg")),
+						1))));
+
+	sealed class DummyRewriter : InsRewriter<Func<string, string>>
+	{
+		public static DummyRewriter Instance { get; } = new DummyRewriter();
+
+		public override InsType VisitNamed(InsNamedType type, Func<string, string> mutator)
+		{
+			var newName = mutator(type.Name);
+
+			if (newName == type.Name)
+			{
+				return base.VisitNamed(type, mutator);
+			}
+
+			if (type.DeclaringType != null)
+			{
+				return NestedType(
+					type.DeclaringType,
+					newName);
+			}
+			else
+			{
+				return NamedType(
+					newName,
+					type.Assembly == null ? null : VisitAssembly(type.Assembly, mutator));
+			}
 		}
 
-		static string Replace(string text, string oldValue, string newValue) => text == oldValue ? newValue : text;
-
-		readonly InsType _allTheTypes =
-			ByRefType(
-				PointerType(
-					SZArrayType(
-						ArrayType(
-							Generic(
-								NestedType(
-									NamedType(
-										"TypeName",
-										Assembly(
-											"Foo",
-											Qualification("Culture", "neutral"))),
-									"Nested"),
-								NamedType("TArg")),
-							1))));
-
-		sealed class DummyRewriter : InsRewriter<Func<string, string>>
+		public override InsAssembly VisitAssembly(InsAssembly assembly, Func<string, string> mutator)
 		{
-			public static DummyRewriter Instance { get; } = new DummyRewriter();
+			var result = base.VisitAssembly(assembly, mutator);
 
-			public override InsType VisitNamed(InsNamedType type, Func<string, string> mutator)
+			var newName = mutator(assembly.Name);
+
+			if (newName != assembly.Name)
 			{
-				var newName = mutator(type.Name);
-
-				if (newName == type.Name)
-				{
-					return base.VisitNamed(type, mutator);
-				}
-
-				if (type.DeclaringType != null)
-				{
-					return NestedType(
-						type.DeclaringType,
-						newName);
-				}
-				else
-				{
-					return NamedType(
-						newName,
-						type.Assembly == null ? null : VisitAssembly(type.Assembly, mutator));
-				}
+				return Assembly(newName, assembly.Qualifications);
 			}
 
-			public override InsAssembly VisitAssembly(InsAssembly assembly, Func<string, string> mutator)
+			return result;
+		}
+
+		public override InsAssemblyQualification VisitAssemblyQualification(InsAssemblyQualification qualification, Func<string, string> mutator)
+		{
+			var newName = mutator(qualification.Name);
+			var newValue = mutator(qualification.Value);
+
+			if (newName == qualification.Name && newValue == qualification.Value)
 			{
-				var result = base.VisitAssembly(assembly, mutator);
-
-				var newName = mutator(assembly.Name);
-
-				if (newName != assembly.Name)
-				{
-					return Assembly(newName, assembly.Qualifications);
-				}
-
-				return result;
+				return qualification;
 			}
 
-			public override InsAssemblyQualification VisitAssemblyQualification(InsAssemblyQualification qualification, Func<string, string> mutator)
-			{
-				var newName = mutator(qualification.Name);
-				var newValue = mutator(qualification.Value);
-
-				if (newName == qualification.Name && newValue == qualification.Value)
-				{
-					return qualification;
-				}
-
-				return Qualification(newName, newValue);
-			}
+			return Qualification(newName, newValue);
 		}
 	}
 }

@@ -2,25 +2,24 @@
 using System;
 using System.Collections.Immutable;
 
-namespace TypeNameInterpretation
+namespace TypeNameInterpretation;
+
+public sealed class InsGenericType : InsType
 {
-	public sealed class InsGenericType : InsType
+	internal InsGenericType(InsNamedType definition, ImmutableArray<InsType> typeArguments)
 	{
-		internal InsGenericType(InsNamedType definition, ImmutableArray<InsType> typeArguments)
-		{
-			ArgumentNullException.ThrowIfNull(definition);
-			Definition = definition;
-			TypeArguments = typeArguments;
-		}
+		ArgumentNullException.ThrowIfNull(definition);
+		Definition = definition;
+		TypeArguments = typeArguments;
+	}
 
-		public InsNamedType Definition { get; }
-		public ImmutableArray<InsType> TypeArguments { get; }
-		public override InsTypeKind Kind => InsTypeKind.Generic;
+	public InsNamedType Definition { get; }
+	public ImmutableArray<InsType> TypeArguments { get; }
+	public override InsTypeKind Kind => InsTypeKind.Generic;
 
-		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
-		{
-			ArgumentNullException.ThrowIfNull(visitor);
-			return visitor.VisitGeneric(this, argument);
-		}
+	public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
+	{
+		ArgumentNullException.ThrowIfNull(visitor);
+		return visitor.VisitGeneric(this, argument);
 	}
 }

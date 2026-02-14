@@ -2,18 +2,17 @@
 using System;
 using System.Buffers;
 
-namespace TypeNameInterpretation
+namespace TypeNameInterpretation;
+
+static class Delimiters
 {
-	static class Delimiters
-	{
 #if NET
-		public static SearchValues<char> All { get; } = SearchValues.Create(_allDelimiterChars);
-		public static SearchValues<char> Quote { get; } = SearchValues.Create(_allDelimiterChars.AsSpan(0, 2));
+	public static SearchValues<char> All { get; } = SearchValues.Create(_allDelimiterChars);
+	public static SearchValues<char> Quote { get; } = SearchValues.Create(_allDelimiterChars.AsSpan(0, 2));
 #else
-		public static ReadOnlySpan<char> All => _allDelimiterChars.AsSpan();
-		public static ReadOnlySpan<char> Quote => _allDelimiterChars.AsSpan(0, 2);
+	public static ReadOnlySpan<char> All => _allDelimiterChars.AsSpan();
+	public static ReadOnlySpan<char> Quote => _allDelimiterChars.AsSpan(0, 2);
 #endif
 
-		const string _allDelimiterChars = "\\\"[],+&*=";
-	}
+	const string _allDelimiterChars = "\\\"[],+&*=";
 }

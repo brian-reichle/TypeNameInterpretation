@@ -2,19 +2,18 @@
 using System;
 using System.Collections.Immutable;
 
-namespace TypeNameInterpretation
-{
-	public sealed class InsAssembly
-	{
-		internal InsAssembly(string name, ImmutableArray<InsAssemblyQualification> qualifications)
-		{
-			ArgumentNullException.ThrowIfNull(name);
-			Name = name;
-			Qualifications = qualifications;
-		}
+namespace TypeNameInterpretation;
 
-		public string Name { get; }
-		public ImmutableArray<InsAssemblyQualification> Qualifications { get; }
-		public override string ToString() => InsFormatter.Format(this);
+public sealed class InsAssembly
+{
+	internal InsAssembly(string name, ImmutableArray<InsAssemblyQualification> qualifications)
+	{
+		ArgumentNullException.ThrowIfNull(name);
+		Name = name;
+		Qualifications = qualifications;
 	}
+
+	public string Name { get; }
+	public ImmutableArray<InsAssemblyQualification> Qualifications { get; }
+	public override string ToString() => InsFormatter.Format(this);
 }
