@@ -9,38 +9,28 @@ namespace TypeNameInterpretation
 	{
 		public static StringBuilder Write(StringBuilder builder, InsType type)
 		{
-			if (builder == null)
-			{
-				throw new ArgumentNullException(nameof(builder));
-			}
-
-			if (type == null)
-			{
-				throw new ArgumentNullException(nameof(type));
-			}
-
+			ArgumentNullException.ThrowIfNull(builder);
+			ArgumentNullException.ThrowIfNull(type);
 			return Writer.Instance.WriteComplexType(type, builder);
 		}
 
 		public static StringBuilder Write(StringBuilder builder, InsAssembly assembly)
 		{
-			if (builder == null)
-			{
-				throw new ArgumentNullException(nameof(builder));
-			}
-
-			if (assembly == null)
-			{
-				throw new ArgumentNullException(nameof(assembly));
-			}
-
+			ArgumentNullException.ThrowIfNull(builder);
+			ArgumentNullException.ThrowIfNull(assembly);
 			return Writer.WriteAssembly(assembly, builder);
 		}
 
-		public static string Format(InsType type) => Write(BuilderPool.Rent(), type).ToStringAndReturn();
+		public static string Format(InsType type)
+		{
+			ArgumentNullException.ThrowIfNull(type);
+			return Write(BuilderPool.Rent(), type).ToStringAndReturn();
+		}
 
 		public static string Format(InsAssembly assembly)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (assembly.Qualifications.Length == 0 && assembly.Name.AsSpan().IndexOfAny(Delimiters.All) < 0)
 			{
 				return assembly.Name;

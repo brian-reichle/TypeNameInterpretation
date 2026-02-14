@@ -10,6 +10,8 @@ namespace TypeNameInterpretation
 	{
 		public static bool TryGetVersion(this InsAssembly assembly, [NotNullWhen(true)] out Version? version)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (!assembly.TryGetQualification(WellKnownQualificationNames.Version, out var value))
 			{
 				version = null;
@@ -26,6 +28,8 @@ namespace TypeNameInterpretation
 
 		public static bool TryGetPublicKey(this InsAssembly assembly, out byte[]? publicKey)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (!assembly.TryGetQualification(WellKnownQualificationNames.PublicKey, out var value))
 			{
 				publicKey = null;
@@ -42,6 +46,8 @@ namespace TypeNameInterpretation
 
 		public static bool TryGetPublicKeyToken(this InsAssembly assembly, out byte[]? publicKeyToken)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (!assembly.TryGetQualification(WellKnownQualificationNames.PublicKeyToken, out var value))
 			{
 				publicKeyToken = null;
@@ -58,6 +64,8 @@ namespace TypeNameInterpretation
 
 		public static bool TryGetProcessorArchitecture(this InsAssembly assembly, out ProcessorArchitecture processorArchitecture)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (!assembly.TryGetQualification(WellKnownQualificationNames.ProcessorArchitecture, out var value))
 			{
 				processorArchitecture = default;
@@ -74,6 +82,9 @@ namespace TypeNameInterpretation
 
 		public static bool TryGetQualification(this InsAssembly assembly, string name, [NotNullWhen(true)] out string? value)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			ArgumentNullException.ThrowIfNull(name);
+
 			foreach (var qualification in assembly.Qualifications)
 			{
 				if (qualification.Name == name)
@@ -88,13 +99,22 @@ namespace TypeNameInterpretation
 		}
 
 		public static InsAssembly WithVersion(this InsAssembly assembly, Version version)
-			=> assembly.WithQualification(WellKnownQualificationNames.Version, version.ToString());
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			ArgumentNullException.ThrowIfNull(version);
+			return assembly.WithQualification(WellKnownQualificationNames.Version, version.ToString());
+		}
 
 		public static InsAssembly WithPublicKey(this InsAssembly assembly, ReadOnlySpan<byte> publicKey)
-			=> assembly.WithQualification(WellKnownQualificationNames.PublicKey, FormatBlob(publicKey));
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			return assembly.WithQualification(WellKnownQualificationNames.PublicKey, FormatBlob(publicKey));
+		}
 
 		public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[]? publicKey)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (publicKey == null)
 			{
 				return assembly.WithQualification(WellKnownQualificationNames.PublicKey, NullBlob);
@@ -106,10 +126,15 @@ namespace TypeNameInterpretation
 		}
 
 		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, ReadOnlySpan<byte> publicKeyToken)
-			=> assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, FormatBlob(publicKeyToken));
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, FormatBlob(publicKeyToken));
+		}
 
 		public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[]? publicKeyToken)
 		{
+			ArgumentNullException.ThrowIfNull(assembly);
+
 			if (publicKeyToken == null)
 			{
 				return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, NullBlob);
@@ -121,13 +146,24 @@ namespace TypeNameInterpretation
 		}
 
 		public static InsAssembly WithProcessorArchitecture(this InsAssembly assembly, ProcessorArchitecture processorArchitecture)
-			=> assembly.WithQualification(WellKnownQualificationNames.ProcessorArchitecture, processorArchitecture.ToString());
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			return assembly.WithQualification(WellKnownQualificationNames.ProcessorArchitecture, processorArchitecture.ToString());
+		}
 
 		public static InsAssembly WithQualification(this InsAssembly assembly, string name, string value)
-			=> assembly.WithQualifications(assembly.Qualifications.WithQualification(name, value));
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			ArgumentNullException.ThrowIfNull(name);
+			return assembly.WithQualifications(assembly.Qualifications.WithQualification(name, value));
+		}
 
 		public static InsAssembly WithoutQualification(this InsAssembly assembly, string name)
-			=> assembly.WithQualifications(assembly.Qualifications.WithoutQualification(name));
+		{
+			ArgumentNullException.ThrowIfNull(assembly);
+			ArgumentNullException.ThrowIfNull(name);
+			return assembly.WithQualifications(assembly.Qualifications.WithoutQualification(name));
+		}
 
 		static InsAssembly WithQualifications(this InsAssembly assembly, ImmutableArray<InsAssemblyQualification> newQualifications)
 		{

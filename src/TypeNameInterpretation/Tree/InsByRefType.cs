@@ -14,11 +14,7 @@ namespace TypeNameInterpretation
 
 		public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
 		{
-			if (visitor == null)
-			{
-				throw new ArgumentNullException(nameof(visitor));
-			}
-
+			ArgumentNullException.ThrowIfNull(visitor);
 			return visitor.VisitByRef(this, argument);
 		}
 	}

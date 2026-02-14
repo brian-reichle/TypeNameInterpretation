@@ -8,7 +8,8 @@ namespace TypeNameInterpretation
 	{
 		internal InsAssembly(string name, ImmutableArray<InsAssemblyQualification> qualifications)
 		{
-			Name = name ?? throw new ArgumentNullException(nameof(name));
+			ArgumentNullException.ThrowIfNull(name);
+			Name = name;
 			Qualifications = qualifications;
 		}
 
