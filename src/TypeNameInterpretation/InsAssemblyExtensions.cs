@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Buffers;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -108,7 +109,7 @@ public static class InsAssemblyExtensions
 	public static InsAssembly WithPublicKey(this InsAssembly assembly, ReadOnlySpan<byte> publicKey)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
-		return assembly.WithQualification(WellKnownQualificationNames.PublicKey, FormatBlob(publicKey));
+		return assembly.WithQualification(WellKnownQualificationNames.PublicKey, Convert.ToHexString(publicKey));
 	}
 
 	public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[]? publicKey)
@@ -128,7 +129,7 @@ public static class InsAssemblyExtensions
 	public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, ReadOnlySpan<byte> publicKeyToken)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
-		return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, FormatBlob(publicKeyToken));
+		return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, Convert.ToHexString(publicKeyToken));
 	}
 
 	public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[]? publicKeyToken)
@@ -228,87 +229,15 @@ public static class InsAssemblyExtensions
 
 		var result = new byte[value.Length >> 1];
 
-#if NET9_0_OR_GREATER
-		if (Convert.FromHexString(value, result, out _, out _) != System.Buffers.OperationStatus.Done)
+		if (Convert.FromHexString(value, result, out _, out _) != OperationStatus.Done)
 		{
 			blob = null;
 			return false;
 		}
-#else
-		for (var i = 0; i < result.Length; i++)
-		{
-			var baseIndex = i << 1;
-			var n1 = CharValue(value[baseIndex]);
-
-			if (n1 < 0)
-			{
-				blob = null;
-				return false;
-			}
-
-			var n2 = CharValue(value[baseIndex + 1]);
-
-			if (n2 < 0)
-			{
-				blob = null;
-				return false;
-			}
-
-			result[i] = (byte)((n1 << 4) | n2);
-		}
-#endif
 
 		blob = result;
 		return true;
 	}
-
-	static string FormatBlob(ReadOnlySpan<byte> blob)
-	{
-#if NET
-		return Convert.ToHexString(blob);
-#else
-		if (blob.Length == 0)
-		{
-			return string.Empty;
-		}
-
-		var builder = BuilderPool.Rent(blob.Length * 2);
-		var charLookup = "0123456789ABCDEF";
-
-		for (var i = 0; i < blob.Length; i++)
-		{
-			var b = blob[i];
-
-			builder
-				.Append(charLookup[b >> 4])
-				.Append(charLookup[b & 0xF]);
-		}
-
-		return builder.ToStringAndReturn();
-#endif
-	}
-
-#if !NET9_0_OR_GREATER
-	static int CharValue(char c)
-	{
-		if (c >= '0' && c <= '9')
-		{
-			return c - '0';
-		}
-		else if (c >= 'a' && c <= 'f')
-		{
-			return c - 'a' + 10;
-		}
-		else if (c >= 'A' && c <= 'F')
-		{
-			return c - 'A' + 10;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-#endif
 
 	const string NullBlob = "null";
 }
