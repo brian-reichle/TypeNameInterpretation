@@ -3,15 +3,14 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace TypeNameInterpretation
+namespace TypeNameInterpretation;
+
+[Serializable]
+partial class InvalidTypeNameException
 {
-	[Serializable]
-	partial class InvalidTypeNameException
+	InvalidTypeNameException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
 	{
-		InvalidTypeNameException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
 	}
 }
 #endif

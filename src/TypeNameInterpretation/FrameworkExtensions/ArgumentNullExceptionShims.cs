@@ -4,23 +4,22 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace System
+namespace System;
+
+static class ArgumentNullExceptionShims
 {
-	static class ArgumentNullExceptionShims
+	extension(ArgumentNullException)
 	{
-		extension(ArgumentNullException)
+		public static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
 		{
-			public static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+			if (argument is null)
 			{
-				if (argument is null)
-				{
-					ThrowNullReferenceException(paramName);
-				}
+				ThrowNullReferenceException(paramName);
 			}
 		}
-
-		[DoesNotReturn]
-		static void ThrowNullReferenceException(string? paramName) => throw new ArgumentNullException(paramName);
 	}
+
+	[DoesNotReturn]
+	static void ThrowNullReferenceException(string? paramName) => throw new ArgumentNullException(paramName);
 }
 #endif
