@@ -2,6 +2,8 @@
 #if !NET9_0_OR_GREATER
 using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using TypeNameInterpretation;
 
 namespace System;
@@ -50,24 +52,48 @@ static class ConvertShims
 	}
 
 	static bool DecoderCore(ReadOnlySpan<char> source, Span<byte> target)
+		=> DecoderCore(ref MemoryMarshal.GetReference(source), ref MemoryMarshal.GetReference(target), source.Length);
+
+	static bool DecoderCore(ref char source, ref byte target, int sourceLength)
 	{
-		var read = 0;
-		var write = 0;
 		var halfByte = false;
 		var highNibble = 0;
 
-		while (read < source.Length)
-		{
-			var nibble = CharValue(source[read++]);
+		ref var sourcePtr = ref source;
+		ref var targetPtr = ref target;
 
-			if (nibble < 0)
+		while (sourceLength > 0)
+		{
+			var c = sourcePtr;
+			byte nibble;
+
+			unchecked
 			{
-				return false;
+				var tmp = (uint)(c - '0');
+
+				if (tmp <= 9)
+				{
+					nibble = (byte)tmp;
+				}
+				else
+				{
+					tmp = (uint)((c | '\x20') - 'a');
+
+					if (tmp <= 5)
+					{
+						nibble = (byte)(tmp + 10);
+					}
+					else
+					{
+						return false;
+					}
+				}
 			}
 
 			if (halfByte)
 			{
-				target[write++] = (byte)(nibble | highNibble);
+				targetPtr = (byte)(nibble | highNibble);
+				targetPtr = ref Unsafe.Add(ref targetPtr, 1);
 				halfByte = false;
 			}
 			else
@@ -75,29 +101,12 @@ static class ConvertShims
 				highNibble = nibble << 4;
 				halfByte = true;
 			}
+
+			sourceLength--;
+			sourcePtr = ref Unsafe.Add(ref sourcePtr, 1);
 		}
 
 		return true;
-	}
-
-	static int CharValue(char c)
-	{
-		if (c >= '0' && c <= '9')
-		{
-			return c - '0';
-		}
-		else if (c >= 'a' && c <= 'f')
-		{
-			return c - 'a' + 10;
-		}
-		else if (c >= 'A' && c <= 'F')
-		{
-			return c - 'A' + 10;
-		}
-		else
-		{
-			return -1;
-		}
 	}
 }
 #endif
