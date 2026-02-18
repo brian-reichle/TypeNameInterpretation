@@ -31,7 +31,7 @@ public static class InsFormatter
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 
-		if (assembly.Qualifications.Length == 0 && assembly.Name.AsSpan().IndexOfAny(Delimiters.All) < 0)
+		if (assembly.Qualifications.Length == 0 && !assembly.Name.AsSpan().ContainsAny(Delimiters.All))
 		{
 			return assembly.Name;
 		}
@@ -188,7 +188,7 @@ public static class InsFormatter
 		}
 
 		static bool RequiresQuoting(string identifier)
-			=> string.IsNullOrEmpty(identifier) || identifier.AsSpan().IndexOfAny(Delimiters.All) >= 0;
+			=> string.IsNullOrEmpty(identifier) || identifier.AsSpan().ContainsAny(Delimiters.All);
 	}
 
 	sealed class AssemblyLocator : IInsTypeVisitor<object, InsAssembly?>
