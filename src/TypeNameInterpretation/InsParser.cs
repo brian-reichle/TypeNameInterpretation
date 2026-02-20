@@ -1,8 +1,11 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
-using System.Buffers;
 using System.Collections.Immutable;
 using System.Text;
+
+#if NET
+using System.Buffers;
+#endif
 
 namespace TypeNameInterpretation;
 
