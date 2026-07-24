@@ -7,8 +7,19 @@ using System.Reflection;
 
 namespace TypeNameInterpretation;
 
+/// <summary>
+/// Extension methods for reading and modifying qualifications on <see cref="InsAssembly"/> instances.
+/// </summary>
 public static class InsAssemblyExtensions
 {
+	/// <summary>
+	/// Attempts to extract the assembly version from the assembly qualifications.
+	/// </summary>
+	/// <param name="assembly">The assembly to inspect.</param>
+	/// <param name="version">When this method returns, contains the parsed <see cref="Version"/> if present; otherwise, <see langword="null"/>.</param>
+	/// <returns><see langword="true"/> if the version qualification was present; otherwise, <see langword="false"/>.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
+	/// <exception cref="FormatException">The version qualification was present, but was not in a valid format.</exception>
 	public static bool TryGetVersion(this InsAssembly assembly, [NotNullWhen(true)] out Version? version)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -27,6 +38,14 @@ public static class InsAssemblyExtensions
 		return true;
 	}
 
+	/// <summary>
+	/// Attempts to extract the full public key byte array from the assembly qualifications.
+	/// </summary>
+	/// <param name="assembly">The assembly to inspect.</param>
+	/// <param name="publicKey">When this method returns, contains the decoded public key bytes if present; otherwise, <see langword="null"/>.</param>
+	/// <returns><see langword="true"/> if the public key qualification was present; otherwise, <see langword="false"/>.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
+	/// <exception cref="FormatException">The public key qualification was present, but was not in a valid format.</exception>
 	public static bool TryGetPublicKey(this InsAssembly assembly, out byte[]? publicKey)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -45,6 +64,14 @@ public static class InsAssemblyExtensions
 		return true;
 	}
 
+	/// <summary>
+	/// Attempts to extract the public key token byte array from the assembly qualifications.
+	/// </summary>
+	/// <param name="assembly">The assembly to inspect.</param>
+	/// <param name="publicKeyToken">When this method returns, contains the decoded public key token bytes if present; otherwise, <see langword="null"/>.</param>
+	/// <returns><see langword="true"/> if the public key token qualification was present; otherwise, <see langword="false"/>.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
+	/// <exception cref="FormatException">The public key token qualification was present, but was not in a valid format.</exception>
 	public static bool TryGetPublicKeyToken(this InsAssembly assembly, out byte[]? publicKeyToken)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -63,6 +90,14 @@ public static class InsAssemblyExtensions
 		return true;
 	}
 
+	/// <summary>
+	/// Attempts to extract the target processor architecture from the assembly qualifications.
+	/// </summary>
+	/// <param name="assembly">The assembly to inspect.</param>
+	/// <param name="processorArchitecture">When this method returns, contains the parsed <see cref="ProcessorArchitecture"/> if present; otherwise, <see cref="ProcessorArchitecture.None"/>.</param>
+	/// <returns><see langword="true"/> if the processor architecture qualification was present; otherwise, <see langword="false"/>.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
+	/// <exception cref="FormatException">The processor architecture qualification was present, but was not recognized.</exception>
 	public static bool TryGetProcessorArchitecture(this InsAssembly assembly, out ProcessorArchitecture processorArchitecture)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -81,6 +116,14 @@ public static class InsAssemblyExtensions
 		return true;
 	}
 
+	/// <summary>
+	/// Attempts to extract a qualification value by key name.
+	/// </summary>
+	/// <param name="assembly">The assembly to inspect.</param>
+	/// <param name="name">The key name of the qualification to find.</param>
+	/// <param name="value">When this method returns, contains the qualification value if found; otherwise, <see langword="null"/>.</param>
+	/// <returns><see langword="true"/> if the qualification with the specified name was found; otherwise, <see langword="false"/>.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> or <paramref name="name"/> is <see langword="null"/>.</exception>
 	public static bool TryGetQualification(this InsAssembly assembly, string name, [NotNullWhen(true)] out string? value)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -99,6 +142,13 @@ public static class InsAssemblyExtensions
 		return false;
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified version qualification set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="version">The version to set.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the specified version qualification, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> or <paramref name="version"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithVersion(this InsAssembly assembly, Version version)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -106,12 +156,26 @@ public static class InsAssemblyExtensions
 		return assembly.WithQualification(WellKnownQualificationNames.Version, version.ToString());
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified public key set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="publicKey">The public key byte span.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the public key qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithPublicKey(this InsAssembly assembly, ReadOnlySpan<byte> publicKey)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 		return assembly.WithQualification(WellKnownQualificationNames.PublicKey, Convert.ToHexString(publicKey));
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified public key set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="publicKey">The public key byte array, or <see langword="null"/> for a null blob.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the public key qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithPublicKey(this InsAssembly assembly, byte[]? publicKey)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -126,12 +190,26 @@ public static class InsAssemblyExtensions
 		}
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified public key token set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="publicKeyToken">The public key token byte span.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the public key token qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, ReadOnlySpan<byte> publicKeyToken)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 		return assembly.WithQualification(WellKnownQualificationNames.PublicKeyToken, Convert.ToHexString(publicKeyToken));
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified public key token set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="publicKeyToken">The public key token byte array, or <see langword="null"/> for a null blob.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the public key token qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithPublicKeyToken(this InsAssembly assembly, byte[]? publicKeyToken)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
@@ -146,19 +224,42 @@ public static class InsAssemblyExtensions
 		}
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with the specified processor architecture qualification set.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="processorArchitecture">The processor architecture to set.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the processor architecture qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithProcessorArchitecture(this InsAssembly assembly, ProcessorArchitecture processorArchitecture)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 		return assembly.WithQualification(WellKnownQualificationNames.ProcessorArchitecture, processorArchitecture.ToString());
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with a qualification added or updated.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="name">The qualification key name.</param>
+	/// <param name="value">The qualification value.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/>, <paramref name="name"/>, or <paramref name="value"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithQualification(this InsAssembly assembly, string name, string value)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 		ArgumentNullException.ThrowIfNull(name);
+		ArgumentNullException.ThrowIfNull(value);
 		return assembly.WithQualifications(assembly.Qualifications.WithQualification(name, value));
 	}
 
+	/// <summary>
+	/// Returns an assembly reference with a qualification removed.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="name">The key name of the qualification to remove.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the specified qualification removed, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> or <paramref name="name"/> is <see langword="null"/>.</exception>
 	public static InsAssembly WithoutQualification(this InsAssembly assembly, string name)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);

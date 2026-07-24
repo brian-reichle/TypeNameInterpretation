@@ -8,8 +8,18 @@ using System.Buffers;
 
 namespace TypeNameInterpretation;
 
+/// <summary>
+/// Provides methods to format <see cref="InsType"/> and <see cref="InsAssembly"/> syntax trees into standard .NET representations.
+/// </summary>
 public static class InsFormatter
 {
+	/// <summary>
+	/// Appends the formatted string representation of an <see cref="InsType"/> to a <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <param name="builder">The <see cref="StringBuilder"/> to write to.</param>
+	/// <param name="type">The <see cref="InsType"/> to format.</param>
+	/// <returns>The provided <paramref name="builder"/> instance.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="type"/> is <see langword="null"/>.</exception>
 	public static StringBuilder Write(StringBuilder builder, InsType type)
 	{
 		ArgumentNullException.ThrowIfNull(builder);
@@ -17,6 +27,13 @@ public static class InsFormatter
 		return Writer.Instance.WriteComplexType(type, builder);
 	}
 
+	/// <summary>
+	/// Appends the formatted string representation of an <see cref="InsAssembly"/> to a <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <param name="builder">The <see cref="StringBuilder"/> to write to.</param>
+	/// <param name="assembly">The <see cref="InsAssembly"/> to format.</param>
+	/// <returns>The provided <paramref name="builder"/> instance.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="builder"/> or <paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static StringBuilder Write(StringBuilder builder, InsAssembly assembly)
 	{
 		ArgumentNullException.ThrowIfNull(builder);
@@ -24,12 +41,24 @@ public static class InsFormatter
 		return Writer.WriteAssembly(assembly, builder);
 	}
 
+	/// <summary>
+	/// Formats an <see cref="InsType"/> into its canonical string representation.
+	/// </summary>
+	/// <param name="type">The <see cref="InsType"/> to format.</param>
+	/// <returns>A non-null formatted type name string.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
 	public static string Format(InsType type)
 	{
 		ArgumentNullException.ThrowIfNull(type);
 		return Write(BuilderPool.Rent(), type).ToStringAndReturn();
 	}
 
+	/// <summary>
+	/// Formats an <see cref="InsAssembly"/> into its canonical string representation.
+	/// </summary>
+	/// <param name="assembly">The <see cref="InsAssembly"/> to format.</param>
+	/// <returns>A non-null formatted assembly reference string.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
 	public static string Format(InsAssembly assembly)
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
