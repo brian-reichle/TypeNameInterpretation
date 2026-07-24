@@ -3,6 +3,9 @@ using System;
 
 namespace TypeNameInterpretation;
 
+/// <summary>
+/// Represents a managed reference type (for example, <c>int&amp;</c>).
+/// </summary>
 public sealed class InsByRefType : InsElementedType
 {
 	internal InsByRefType(InsType elementType)
@@ -10,8 +13,10 @@ public sealed class InsByRefType : InsElementedType
 	{
 	}
 
+	/// <inheritdoc />
 	public override InsTypeKind Kind => InsTypeKind.ByRef;
 
+	/// <inheritdoc />
 	public override TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument)
 	{
 		ArgumentNullException.ThrowIfNull(visitor);
