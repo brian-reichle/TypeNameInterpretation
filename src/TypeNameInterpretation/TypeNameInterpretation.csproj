@@ -13,7 +13,7 @@
     </PackageReference>
   </ItemGroup>
   <Choose>
-    <When Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
     </When>
     <When Condition="'$(TargetFramework)' == 'netstandard2.1'">
       <ItemGroup>
