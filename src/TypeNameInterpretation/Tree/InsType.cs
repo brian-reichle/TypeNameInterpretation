@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TypeNameInterpretation;
 
@@ -28,7 +29,7 @@ public abstract class InsType
 	/// Returns the canonical string representation of this type.
 	/// </summary>
 	/// <returns>A non-null formatted type name string.</returns>
-	public override string ToString() => InsFormatter.Format(this);
+	public sealed override string ToString() => InsFormatter.Format(this);
 
 	/// <summary>
 	/// Accepts a visitor to perform operations on this type node.
@@ -40,4 +41,10 @@ public abstract class InsType
 	/// <returns>The result returned by the visitor.</returns>
 	/// <exception cref="ArgumentNullException"><paramref name="visitor"/> is <see langword="null"/>.</exception>
 	public abstract TReturn Apply<TArgument, TReturn>(IInsTypeVisitor<TArgument, TReturn> visitor, TArgument argument);
+
+	internal virtual bool TryFastFormat([NotNullWhen(true)] out string? value)
+	{
+		value = null;
+		return false;
+	}
 }

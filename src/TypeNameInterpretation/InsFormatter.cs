@@ -50,6 +50,12 @@ public static class InsFormatter
 	public static string Format(InsType type)
 	{
 		ArgumentNullException.ThrowIfNull(type);
+
+		if (type.TryFastFormat(out var result))
+		{
+			return result;
+		}
+
 		return Write(BuilderPool.Rent(), type).ToStringAndReturn();
 	}
 
@@ -63,9 +69,9 @@ public static class InsFormatter
 	{
 		ArgumentNullException.ThrowIfNull(assembly);
 
-		if (assembly.Qualifications.Length == 0 && !assembly.Name.AsSpan().ContainsAny(Delimiters.All))
+		if (assembly.TryFastFormat(out var result))
 		{
-			return assembly.Name;
+			return result;
 		}
 
 		return Write(BuilderPool.Rent(), assembly).ToStringAndReturn();

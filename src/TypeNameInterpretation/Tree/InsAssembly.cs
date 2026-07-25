@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TypeNameInterpretation;
 
@@ -34,4 +35,16 @@ public sealed class InsAssembly
 	/// </summary>
 	/// <returns>A non-null formatted assembly reference string.</returns>
 	public override string ToString() => InsFormatter.Format(this);
+
+	internal bool TryFastFormat([NotNullWhen(true)] out string? value)
+	{
+		if (Qualifications.Length == 0 && !Name.AsSpan().ContainsAny(Delimiters.All))
+		{
+			value = Name;
+			return true;
+		}
+
+		value = null;
+		return false;
+	}
 }
