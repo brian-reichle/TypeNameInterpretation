@@ -20,6 +20,13 @@ class InsFormatterTest
 	}
 
 	[Test]
+	public void AvoidAllocationsOnSimpleNamedTypes()
+	{
+		var name = "Foo";
+		Assert.That(Format(NamedType(name)), Is.SameAs(name));
+	}
+
+	[Test]
 	public void AvoidAllocationsOnSimpleAssemblyNames()
 	{
 		var name = "Foo";

@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TypeNameInterpretation;
 
@@ -50,5 +51,19 @@ public sealed class InsNamedType : InsType
 	{
 		ArgumentNullException.ThrowIfNull(visitor);
 		return visitor.VisitNamed(this, argument);
+	}
+
+	internal override bool TryFastFormat([NotNullWhen(true)] out string? value)
+	{
+		if (Assembly == null && DeclaringType == null && !Name.AsSpan().ContainsAny(Delimiters.All))
+		{
+			value = Name;
+			return true;
+		}
+		else
+		{
+			value = null;
+			return false;
+		}
 	}
 }
