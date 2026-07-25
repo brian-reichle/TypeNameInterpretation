@@ -23,19 +23,9 @@ static class ConvertShims
 				return string.Empty;
 			}
 
-			var charLookup = "0123456789ABCDEF";
 			var charCount = blob.Length * 2;
 			var sharedArray = ArrayPool<char>.Shared.Rent(charCount);
-
-			for (var i = 0; i < blob.Length; i++)
-			{
-				var b = blob[i];
-				var destIndex = i * 2;
-
-				sharedArray[destIndex] = charLookup[b >> 4];
-				sharedArray[destIndex + 1] = charLookup[b & 0xF];
-			}
-
+			EncodeCore(ref MemoryMarshal.GetReference(blob), ref sharedArray[0], blob.Length);
 			ArrayPool<char>.Shared.Return(sharedArray);
 			return new string(sharedArray, 0, charCount);
 		}
@@ -113,5 +103,23 @@ static class ConvertShims
 
 		return true;
 	}
+
+#if !NET
+	static void EncodeCore(ref byte source, ref char target, int sourceLength)
+	{
+		var charLookup = "0123456789ABCDEF";
+
+		while (sourceLength-- > 0)
+		{
+			var b = source;
+			source = ref Unsafe.Add(ref source, 1);
+
+			target = charLookup[b >> 4];
+			target = ref Unsafe.Add(ref target, 1);
+			target = charLookup[b & 0xF];
+			target = ref Unsafe.Add(ref target, 1);
+		}
+	}
+#endif
 }
 #endif
