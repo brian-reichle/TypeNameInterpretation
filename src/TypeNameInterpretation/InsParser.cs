@@ -216,11 +216,65 @@ static class InsParser
 		{
 			AssertNotEOF(index);
 
-			var name = ParseQuoteableIdentifier(ref index);
+			var name = ParseQualificationKey(ref index);
 			ReadChar(ref index, '=');
 			var value = ParseQuoteableIdentifier(ref index);
 
 			return new InsAssemblyQualification(name, value);
+		}
+
+		string ParseQualificationKey(ref int index)
+		{
+			if (TrySliceIdentifier(ref index, out var identifierSpan))
+			{
+				return identifierSpan switch
+				{
+					// At the time of writing, the compiler does not optimise this. Instead it generates
+					// a series of sequence equality checks. So we sort them by how likely they are to
+					// turn up in a partially qualified assembly name.
+					WellKnownQualificationNames.Version => WellKnownQualificationNames.Version,
+					WellKnownQualificationNames.PublicKeyToken => WellKnownQualificationNames.PublicKeyToken,
+					WellKnownQualificationNames.Culture => WellKnownQualificationNames.Culture,
+					WellKnownQualificationNames.PublicKey => WellKnownQualificationNames.PublicKey,
+					WellKnownQualificationNames.ProcessorArchitecture => WellKnownQualificationNames.ProcessorArchitecture,
+					_ => identifierSpan.ToString(),
+				};
+			}
+
+			return ParseQuoteableIdentifier(ref index);
+		}
+
+		// Attempts to parse an identifier and return it as a ReadOnlySpan<> to avoid an allocation.
+		// This only works if the identifier does not escape any characters, if it does then it
+		// returns false and the caller should fallback to using ParseQuoteableIdentifier instead.
+		// The `index` parameter will only be advanced if TrySliceIdentifier returns true, indicating
+		// that it successfully consumed input.
+		bool TrySliceIdentifier(ref int index, out ReadOnlySpan<char> identifier)
+		{
+			var pos = index;
+
+			if (TryReadChar(ref pos, '"'))
+			{
+				if (TrySliceIdentifierCore(_buffer.Slice(pos), Delimiters.Quote, out identifier))
+				{
+					pos += identifier.Length;
+					ReadChar(ref pos, '"');
+					index = pos;
+					return true;
+				}
+			}
+			else
+			{
+				if (TrySliceIdentifierCore(_buffer.Slice(pos), Delimiters.All, out identifier))
+				{
+					pos += identifier.Length;
+					index = pos;
+					return true;
+				}
+			}
+
+			identifier = [];
+			return false;
 		}
 
 		string ParseQuoteableIdentifier(ref int index)
@@ -236,6 +290,39 @@ static class InsParser
 		}
 
 		string ParseIdentifier(ref int index) => ParseIdentifierCore(ref index, Delimiters.All);
+
+#if NET
+		static bool TrySliceIdentifierCore(ReadOnlySpan<char> source, SearchValues<char> delimiters, out ReadOnlySpan<char> identifier)
+#else
+		static bool TrySliceIdentifierCore(ReadOnlySpan<char> source, ReadOnlySpan<char> delimiters, out ReadOnlySpan<char> identifier)
+#endif
+		{
+			var index = 0;
+
+			while (true)
+			{
+				var i = source.Slice(index).IndexOfAny(delimiters);
+
+				if (i < 0)
+				{
+					index = source.Length;
+					break;
+				}
+
+				index += i;
+
+				if (source[index] != '\\')
+				{
+					break;
+				}
+
+				identifier = [];
+				return false;
+			}
+
+			identifier = source.Slice(0, index);
+			return true;
+		}
 
 #if NET
 		string ParseIdentifierCore(ref int index, SearchValues<char> delimiters)
