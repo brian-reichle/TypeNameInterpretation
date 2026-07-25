@@ -23,6 +23,7 @@ class InsParserTest
 	[TestCase("Foo, Bar=Baz, Culture=neutral", "Bar|Baz", "Culture|neutral")]
 	[TestCase("Foo, Bar=Baz", "Bar|Baz")]
 	[TestCase("Foo, \"Bar\"=\"Baz\"", "Bar|Baz")]
+	[TestCase("Foo, \"B\\\"ar\"=\"Baz\"", "B\"ar|Baz")]
 	[TestCase("Foo, Bar=Baz\\,", "Bar|Baz,")]
 	[TestCase("Foo, Bar=\"Baz,\"", "Bar|Baz,")]
 	[TestCase("Foo, Bar=Ba\\\"z", "Bar|Ba\"z")]
@@ -355,6 +356,28 @@ class InsParserTest
 
 		// Ensure we can correctly locate the start of the assembly dispite complex syntax along the way.
 		Assert.That(TreeRenderer.Format(InsTypeFactory.ParseTypeName("Baz[[Foo.Bar[,], FooBar, Culture=\"neu\\\"tr]al\", Frob=bar\\]x, Version=3.14]], Quux")), Is.EqualTo(expected));
+	}
+
+	[Test]
+	public void QualificationKeyReuse()
+	{
+		using (Assert.EnterMultipleScope())
+		{
+			Assert.That(GetQualificationName("Foo, Version=1.0"), Is.SameAs(WellKnownQualificationNames.Version));
+			Assert.That(GetQualificationName("Foo, PublicKey=abcdef"), Is.SameAs(WellKnownQualificationNames.PublicKey));
+			Assert.That(GetQualificationName("Foo, PublicKeyToken=abcdef"), Is.SameAs(WellKnownQualificationNames.PublicKeyToken));
+			Assert.That(GetQualificationName("Foo, Culture=neutral"), Is.SameAs(WellKnownQualificationNames.Culture));
+			Assert.That(GetQualificationName("Foo, ProcessorArchitecture=neutral"), Is.SameAs(WellKnownQualificationNames.ProcessorArchitecture));
+
+			Assert.That(GetQualificationName("Foo, \"Version\"=1.0"), Is.SameAs(WellKnownQualificationNames.Version));
+		}
+
+		static string GetQualificationName(string assemblyName)
+		{
+			var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
+			Assert.That(assembly.Qualifications, Has.Length.EqualTo(1));
+			return assembly.Qualifications[0].Name;
+		}
 	}
 
 	[TestCase("Foo]", ExpectedResult = "Unexpected char at position 3.")]
