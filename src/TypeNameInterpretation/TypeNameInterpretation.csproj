@@ -13,24 +13,27 @@
     </PackageReference>
   </ItemGroup>
   <Choose>
-    <When Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
-    </When>
-    <When Condition="'$(TargetFramework)' == 'netstandard2.1'">
-      <ItemGroup>
-        <PackageReference Include="System.Collections.Immutable" />
-      </ItemGroup>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.1'))">
     </When>
     <Otherwise>
       <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       </PropertyGroup>
       <ItemGroup>
-        <PackageReference Include="System.Collections.Immutable" />
         <PackageReference Include="System.Memory" />
         <PackageReference Include="Nullable">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <Choose>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netCoreApp1.0'))">
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="System.Collections.Immutable" />
       </ItemGroup>
     </Otherwise>
   </Choose>
