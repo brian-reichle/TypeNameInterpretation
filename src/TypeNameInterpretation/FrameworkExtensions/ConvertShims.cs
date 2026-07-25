@@ -24,10 +24,30 @@ static class ConvertShims
 			}
 
 			var charCount = blob.Length * 2;
-			var sharedArray = ArrayPool<char>.Shared.Rent(charCount);
-			EncodeCore(ref MemoryMarshal.GetReference(blob), ref sharedArray[0], blob.Length);
-			ArrayPool<char>.Shared.Return(sharedArray);
-			return new string(sharedArray, 0, charCount);
+
+			if (blob.Length <= 8)
+			{
+				// For short sequences, the overhead of using ArrayPool<> will wipe away all the gains.
+#if NETFRAMEWORK || NETSTANDARD2_0
+				unsafe
+				{
+					var ptr = stackalloc char[charCount];
+					EncodeCore(ref MemoryMarshal.GetReference(blob), ref Unsafe.AsRef<char>(ptr), blob.Length);
+					return new string(ptr, 0, charCount);
+				}
+#else
+				Span<char> buffer = stackalloc char[charCount];
+				EncodeCore(ref MemoryMarshal.GetReference(blob), ref MemoryMarshal.GetReference(buffer), blob.Length);
+				return buffer.ToString();
+#endif
+			}
+			else
+			{
+				var sharedArray = ArrayPool<char>.Shared.Rent(charCount);
+				EncodeCore(ref MemoryMarshal.GetReference(blob), ref sharedArray[0], blob.Length);
+				ArrayPool<char>.Shared.Return(sharedArray);
+				return new string(sharedArray, 0, charCount);
+			}
 		}
 #endif
 
