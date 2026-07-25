@@ -23,19 +23,21 @@ static class ConvertShims
 				return string.Empty;
 			}
 
-			var builder = BuilderPool.Rent(blob.Length * 2);
 			var charLookup = "0123456789ABCDEF";
+			var charCount = blob.Length * 2;
+			var sharedArray = ArrayPool<char>.Shared.Rent(charCount);
 
 			for (var i = 0; i < blob.Length; i++)
 			{
 				var b = blob[i];
+				var destIndex = i * 2;
 
-				builder
-					.Append(charLookup[b >> 4])
-					.Append(charLookup[b & 0xF]);
+				sharedArray[destIndex] = charLookup[b >> 4];
+				sharedArray[destIndex + 1] = charLookup[b & 0xF];
 			}
 
-			return builder.ToStringAndReturn();
+			ArrayPool<char>.Shared.Return(sharedArray);
+			return new string(sharedArray, 0, charCount);
 		}
 #endif
 
