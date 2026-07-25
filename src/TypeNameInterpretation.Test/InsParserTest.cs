@@ -362,6 +362,7 @@ class InsParserTest
 	[TestCase("Foo&[]", ExpectedResult = "Unexpected char at position 4.")]
 	[TestCase("Foo, Bar,", ExpectedResult = "Unexpected end of format.")]
 	[TestCase("Foo[", ExpectedResult = "Unexpected end of format.")]
+	[TestCase("Foo\\", ExpectedResult = "Unexpected end of format.")]
 	public string? Type_Invalid(string typeName)
 	{
 		try
