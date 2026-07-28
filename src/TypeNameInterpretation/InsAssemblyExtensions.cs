@@ -254,6 +254,26 @@ public static class InsAssemblyExtensions
 	}
 
 	/// <summary>
+	/// Returns an assembly reference with a qualification added or replaced.
+	/// </summary>
+	/// <param name="assembly">The base assembly reference.</param>
+	/// <param name="qualification">The qualification add or replace with.</param>
+	/// <returns>A new <see cref="InsAssembly"/> with the qualification set, or <paramref name="assembly"/> if unchanged.</returns>
+	/// <remarks>
+	/// This behaves like <see cref="WithQualification(ImmutableArray{InsAssemblyQualification}, string, string)"/> except that
+	/// if the a qualification needs to be added or updated, it will use the exact qualification instance provided. This method
+	/// will prefer to return the original <see cref="ImmutableArray{InsAssemblyQualification}"/> if the name and value match,
+	/// even if the qualification is a different instance.
+	/// </remarks>
+	/// <exception cref="ArgumentNullException"><paramref name="assembly"/>, or <paramref name="qualification"/> is <see langword="null"/>.</exception>
+	public static InsAssembly WithQualification(this InsAssembly assembly, InsAssemblyQualification qualification)
+	{
+		ArgumentNullException.ThrowIfNull(assembly);
+		ArgumentNullException.ThrowIfNull(qualification);
+		return assembly.WithQualifications(assembly.Qualifications.WithQualification(qualification));
+	}
+
+	/// <summary>
 	/// Returns an assembly reference with a qualification removed.
 	/// </summary>
 	/// <param name="assembly">The base assembly reference.</param>
@@ -279,35 +299,56 @@ public static class InsAssemblyExtensions
 
 	static ImmutableArray<InsAssemblyQualification> WithQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name, string value)
 	{
-		for (var i = 0; i < qualifications.Length; i++)
+		var index = qualifications.IndexOfQualification(name);
+
+		if (index < 0)
 		{
-			var qualification = qualifications[i];
-
-			if (qualification.Name == name)
-			{
-				if (qualification.Value == value)
-				{
-					return qualifications;
-				}
-
-				return qualifications.SetItem(i, new InsAssemblyQualification(name, value));
-			}
+			return qualifications.Add(new InsAssemblyQualification(name, value));
+		}
+		else if (qualifications[index].Value != value)
+		{
+			return qualifications.SetItem(index, new InsAssemblyQualification(name, value));
 		}
 
-		return qualifications.Add(new InsAssemblyQualification(name, value));
+		return qualifications;
+	}
+
+	static ImmutableArray<InsAssemblyQualification> WithQualification(this ImmutableArray<InsAssemblyQualification> qualifications, InsAssemblyQualification qualification)
+	{
+		var index = qualifications.IndexOfQualification(qualification.Name);
+
+		if (index < 0)
+		{
+			return qualifications.Add(qualification);
+		}
+		else if (qualifications[index].Value != qualification.Value)
+		{
+			return qualifications.SetItem(index, qualification);
+		}
+
+		return qualifications;
 	}
 
 	static ImmutableArray<InsAssemblyQualification> WithoutQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name)
+	{
+		var index = qualifications.IndexOfQualification(name);
+
+		return index < 0
+			? qualifications
+			: qualifications.RemoveAt(index);
+	}
+
+	static int IndexOfQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name)
 	{
 		for (var i = 0; i < qualifications.Length; i++)
 		{
 			if (qualifications[i].Name == name)
 			{
-				return qualifications.RemoveAt(i);
+				return i;
 			}
 		}
 
-		return qualifications;
+		return -1;
 	}
 
 	static bool TryParseBlob(string value, out byte[]? blob)
