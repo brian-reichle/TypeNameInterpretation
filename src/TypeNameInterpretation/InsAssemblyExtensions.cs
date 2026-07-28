@@ -279,35 +279,40 @@ public static class InsAssemblyExtensions
 
 	static ImmutableArray<InsAssemblyQualification> WithQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name, string value)
 	{
-		for (var i = 0; i < qualifications.Length; i++)
+		var index = qualifications.IndexOfQualification(name);
+
+		if (index < 0)
 		{
-			var qualification = qualifications[i];
-
-			if (qualification.Name == name)
-			{
-				if (qualification.Value == value)
-				{
-					return qualifications;
-				}
-
-				return qualifications.SetItem(i, new InsAssemblyQualification(name, value));
-			}
+			return qualifications.Add(new InsAssemblyQualification(name, value));
+		}
+		else if (qualifications[index].Value != value)
+		{
+			return qualifications.SetItem(index, new InsAssemblyQualification(name, value));
 		}
 
-		return qualifications.Add(new InsAssemblyQualification(name, value));
+		return qualifications;
 	}
 
 	static ImmutableArray<InsAssemblyQualification> WithoutQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name)
+	{
+		var index = qualifications.IndexOfQualification(name);
+
+		return index < 0
+			? qualifications
+			: qualifications.RemoveAt(index);
+	}
+
+	static int IndexOfQualification(this ImmutableArray<InsAssemblyQualification> qualifications, string name)
 	{
 		for (var i = 0; i < qualifications.Length; i++)
 		{
 			if (qualifications[i].Name == name)
 			{
-				return qualifications.RemoveAt(i);
+				return i;
 			}
 		}
 
-		return qualifications;
+		return -1;
 	}
 
 	static bool TryParseBlob(string value, out byte[]? blob)
