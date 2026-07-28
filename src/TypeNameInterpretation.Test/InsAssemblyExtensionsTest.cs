@@ -192,6 +192,30 @@ class InsAssemblyExtensionsTest
 		Assert.That(newAssembly, Is.SameAs(assembly));
 	}
 
+	[TestCase("Foo, Target=OldValue", 0)]
+	[TestCase("Foo, Pre=Value, Target=OldValue, Post=Value", 1)]
+	[TestCase("Foo, Pre=Value, Post=Value", 2)]
+	public void WithQualification_Exact(string assemblyName, int index)
+	{
+		var qualification = InsTypeFactory.Qualification("Target", "Value");
+
+		var assembly = InsTypeFactory.ParseAssemblyName(assemblyName)
+			.WithQualification(qualification);
+
+		Assert.That(assembly.Qualifications[index], Is.SameAs(qualification));
+	}
+
+	[Test]
+	public void WithQualification_Exact_Unchanged()
+	{
+		var qualification = InsTypeFactory.Qualification("Target", "Value");
+
+		var oldAssembly = InsTypeFactory.ParseAssemblyName("Foo, Pre=Value, Target=Value, Post=Value");
+		var newAssembly = oldAssembly.WithQualification(qualification);
+
+		Assert.That(newAssembly, Is.SameAs(oldAssembly));
+	}
+
 	[TestCase("Foo", "Bar", ExpectedResult = "Foo")]
 	[TestCase("Foo, Bar=A", "Bar", ExpectedResult = "Foo")]
 	[TestCase("Foo, Baz=A, Bar=B, Quux=C", "Bar", ExpectedResult = "Foo, Baz=A, Quux=C")]
