@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution/">
+    <File Path="../.editorconfig" />
+    <File Path="../.github/workflows/build.yaml" />
+    <File Path="../Directory.Build.props" />
+    <File Path="../Directory.Packages.props" />
+    <File Path="../global.json" />
+    <File Path="../stylecop.json" />
+  </Folder>
+  <Project Path="TypeNameInterpretation.Benchmark/TypeNameInterpretation.Benchmark.csproj" />
+  <Project Path="TypeNameInterpretation.Test/TypeNameInterpretation.Test.csproj">
+    <Build Solution="Release|*" Project="false" />
+  </Project>
+  <Project Path="TypeNameInterpretation/TypeNameInterpretation.csproj" />
+</Solution>
