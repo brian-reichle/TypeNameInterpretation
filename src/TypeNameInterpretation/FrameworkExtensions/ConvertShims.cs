@@ -5,10 +5,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if !NET
-using TypeNameInterpretation;
-#endif
-
 namespace System;
 
 static class ConvertShims
