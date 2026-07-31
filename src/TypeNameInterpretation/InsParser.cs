@@ -5,6 +5,7 @@ using System.Text;
 
 #if NET
 using System.Buffers;
+using System.Runtime.CompilerServices;
 #endif
 
 namespace TypeNameInterpretation;
@@ -197,18 +198,95 @@ static class InsParser
 
 		public InsAssembly ParseAssembly(ref int index)
 		{
+			// The assembly could be unqualified, partially qualified or fully qualified,
+			// so there could be 0-4 qualifications. If there are more than 4 qualifications
+			// we still parse them because:
+			// 1. We want to faithfully represent what is actually in the input string.
+			// 2. The consumer may be trying to represent additional non-standard information.
+			//    (this is fine as long as they remember to strip it out before formatting
+			//    a string that they then try to pass to the runtime.)
+			//
+			// Note: ProcessorArchitecture is optional and rarely specified. So 3 will be
+			// sufficient for most cases.
 			AssertNotEOF(index);
 			var identifier = ParseIdentifier(ref index);
-			ImmutableArray<InsAssemblyQualification>.Builder? builder = null;
 
-			while (TryReadChar(ref index, ','))
+#if NET
+			InlineArray4<InsAssemblyQualification> qualifications = default;
+			Span<InsAssemblyQualification> qualificationSpan = qualifications;
+
+			for (var i = 0; i < qualificationSpan.Length; i++)
 			{
+				if (!TryReadChar(ref index, ','))
+				{
+					return new InsAssembly(identifier, ImmutableArray.Create(qualificationSpan.Slice(0, i)));
+				}
+
 				DiscardWhitespace(ref index);
-				builder ??= ImmutableArray.CreateBuilder<InsAssemblyQualification>();
-				builder.Add(ParseQualification(ref index));
+				qualificationSpan[i] = ParseQualification(ref index);
 			}
 
-			return new InsAssembly(identifier, builder?.ToImmutable() ?? ImmutableArray<InsAssemblyQualification>.Empty);
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, ImmutableArray.Create(qualificationSpan));
+			}
+
+			var builder = ImmutableArray.CreateBuilder<InsAssemblyQualification>();
+			builder.AddRange(qualificationSpan);
+#else
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, []);
+			}
+
+			DiscardWhitespace(ref index);
+			var q1 = ParseQualification(ref index);
+
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, ImmutableArray.Create(q1));
+			}
+
+			DiscardWhitespace(ref index);
+			var q2 = ParseQualification(ref index);
+
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, ImmutableArray.Create(q1, q2));
+			}
+
+			DiscardWhitespace(ref index);
+			var q3 = ParseQualification(ref index);
+
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, ImmutableArray.Create(q1, q2, q3));
+			}
+
+			DiscardWhitespace(ref index);
+			var q4 = ParseQualification(ref index);
+
+			if (!TryReadChar(ref index, ','))
+			{
+				return new InsAssembly(identifier, ImmutableArray.Create(q1, q2, q3, q4));
+			}
+
+			var builder = ImmutableArray.CreateBuilder<InsAssemblyQualification>();
+			builder.Add(q1);
+			builder.Add(q2);
+			builder.Add(q3);
+			builder.Add(q4);
+
+#endif
+
+			do
+			{
+				DiscardWhitespace(ref index);
+				builder.Add(ParseQualification(ref index));
+			}
+			while (TryReadChar(ref index, ','));
+
+			return new InsAssembly(identifier, builder.ToImmutable());
 		}
 
 		InsAssemblyQualification ParseQualification(ref int index)
