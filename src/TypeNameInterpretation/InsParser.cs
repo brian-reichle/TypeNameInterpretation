@@ -204,7 +204,6 @@ static class InsParser
 			while (TryReadChar(ref index, ','))
 			{
 				DiscardWhitespace(ref index);
-				AssertNotEOF(index);
 				builder ??= ImmutableArray.CreateBuilder<InsAssemblyQualification>();
 				builder.Add(ParseQualification(ref index));
 			}
