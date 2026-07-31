@@ -28,6 +28,24 @@ class InsParserTest
 	[TestCase("Foo, Bar=\"Baz,\"", "Bar|Baz,")]
 	[TestCase("Foo, Bar=Ba\\\"z", "Bar|Ba\"z")]
 	[TestCase("Foo, Bar=\"Ba\\\"z\"", "Bar|Ba\"z")]
+	[TestCase(
+		"Foo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+		"Version|1.0.0.0",
+		"Culture|neutral",
+		"PublicKeyToken|null")]
+	[TestCase(
+		"Foo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, ProcessorArchitecture=x64",
+		"Version|1.0.0.0",
+		"Culture|neutral",
+		"PublicKeyToken|null",
+		"ProcessorArchitecture|x64")]
+	[TestCase(
+		"Foo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, ProcessorArchitecture=x64, IsMagic=true",
+		"Version|1.0.0.0",
+		"Culture|neutral",
+		"PublicKeyToken|null",
+		"ProcessorArchitecture|x64",
+		"IsMagic|true")]
 	public void Assembly_QualifiedName(string assemblyName, params string[] qualifications)
 	{
 		var assembly = InsTypeFactory.ParseAssemblyName(assemblyName);
