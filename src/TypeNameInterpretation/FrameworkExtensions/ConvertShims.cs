@@ -1,5 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See LICENSE in the project root for license information.
-#if !NET9_0_OR_GREATER
+#if !NET
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -11,7 +11,6 @@ static class ConvertShims
 {
 	extension(Convert)
 	{
-#if !NET
 		public static string ToHexString(ReadOnlySpan<byte> blob)
 		{
 			if (blob.Length == 0)
@@ -45,7 +44,6 @@ static class ConvertShims
 				return new string(sharedArray, 0, charCount);
 			}
 		}
-#endif
 
 		public static OperationStatus FromHexString(ReadOnlySpan<char> source, Span<byte> destination, out int charsConsumed, out int bytesWritten)
 		{
@@ -120,7 +118,6 @@ static class ConvertShims
 		return true;
 	}
 
-#if !NET
 	static void EncodeCore(ref byte source, ref char target, int sourceLength)
 	{
 		var charLookup = "0123456789ABCDEF";
@@ -136,6 +133,5 @@ static class ConvertShims
 			target = ref Unsafe.Add(ref target, 1);
 		}
 	}
-#endif
 }
 #endif

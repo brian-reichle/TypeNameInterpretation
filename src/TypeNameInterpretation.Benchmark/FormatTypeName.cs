@@ -6,7 +6,6 @@ using static TypeNameInterpretation.InsTypeFactory;
 namespace TypeNameInterpretation.Benchmark;
 
 [SimpleJob(RuntimeMoniker.Net48)]
-[SimpleJob(RuntimeMoniker.Net80)]
 [SimpleJob(RuntimeMoniker.Net10_0)]
 [MemoryDiagnoser]
 public class FormatTypeName
